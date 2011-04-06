@@ -42,11 +42,11 @@ group { name: "menu";
          description { state: "default" 0.0;
             rel1 {
                to: "splashscreen";
-               relative: 0.2 1.05;
+               relative: 0.1 1.05;
             }
             rel2 {
                to_x: "splashscreen";
-               relative: 0.8 0.8;
+               relative: 0.9 0.8;
             }
             color_class: "hi-score";
             text {
@@ -63,6 +63,7 @@ group { name: "menu";
          effect: OUTLINE_SOFT_SHADOW;
          description { state: "default" 0.0;
             rel1.to: "hi-score_label";
+            rel1.offset: 0 -4;
             rel2.to: "hi-score_label";
             color_class: "hi-score";
             text {
@@ -95,12 +96,16 @@ group { name: "menu";
          clip_to: "info_clip";
          description { state: "default" 0.0;
             rel1.to: "info_clip";
+            rel2 {
+               to: "info_clip";
+               relative: 1 0.4;
+            }
             color_class: "info";
             text {
                font: "nines";
                size: 24;
                text: "Press ENTER to play!";
-               align: 0.5 0.2;
+               align: 0.5 1;
             }
          }
       }
@@ -109,13 +114,16 @@ group { name: "menu";
          type: TEXT;
          effect: OUTLINE_SOFT_SHADOW;
          description { state: "default" 0.0;
-            rel1.to: "info_clip";
+            rel1 {
+               to: "info";
+               relative: 0 1;
+            }
             color_class: "info";
             text {
                font: "nines";
                size: 14;
                text: "Or ESC to go back to your life";
-               align: 0.5 0.5;
+               align: 0.5 0;
             }
          }
       }
