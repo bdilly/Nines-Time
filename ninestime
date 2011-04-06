@@ -1,0 +1,51 @@
+#!/usr/bin/python
+
+from os.path import abspath, join
+from ecore.evas import SoftwareX11
+from ecore import main_loop_begin
+from edje import Edje
+
+DATA_DIR = abspath("./data")
+THEME = join(DATA_DIR, "theme", "default.edj")
+
+
+def resize_cb(ee):
+    bg = ee.data["bg"]
+    canvas = ee.evas
+    bg.size = canvas.size
+
+def menu_screen(ee):
+    menu = Edje(ee.evas, file=THEME, group="menu")
+    menu.size = ee.evas.size
+    menu.show()
+
+
+def game_main():
+    # FIXME get it from a file so user don't need to change it every time
+    screen_size = (400, 600)
+    ee = SoftwareX11(w=screen_size[0], h=screen_size[1])
+
+    canvas = ee.evas
+    bg = canvas.Rectangle(color=(0, 0, 0, 255))
+    bg.size = canvas.size
+    bg.show()
+
+    ee.data["bg"] = bg
+    ee.data["score"] = 0
+    # FIXME get it from a file
+    ee.data["hi-score"] = 0
+    ee.size_min_set(*screen_size)
+    ee.callback_resize = resize_cb
+    ee.title = "Nines Time"
+
+    menu_screen(ee)
+
+    ee.show()
+    main_loop_begin()
+
+    del canvas
+    del ee
+
+
+if __name__ == "__main__":
+    game_main()

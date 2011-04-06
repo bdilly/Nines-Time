@@ -1,0 +1,13 @@
+group { name: "game";
+
+   parts {
+
+      part { name: "background";
+         type: RECT;
+         description { state: "default" 0.0;
+            color: 0 0 0 255;
+         }
+      }
+
+   }
+}

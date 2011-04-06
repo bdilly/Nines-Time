@@ -1,0 +1,20 @@
+color_classes {
+
+   color_class { name: "info";
+      color: 200 200 200 255;
+      color2: 40 40 40 128;
+      color3: 40 40 40 128;
+   }
+
+   color_class { name: "hi-score";
+      color: 255 20 20 255;
+      color2: 40 40 40 128;
+      color3: 40 40 40 128;
+   }
+
+}
+
+collections {
+#include "menu.edc"
+#include "game.edc"
+}

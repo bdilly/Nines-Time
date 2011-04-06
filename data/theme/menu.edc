@@ -1,0 +1,143 @@
+group { name: "menu";
+
+   images {
+      image: "splash.png" COMP;
+   }
+
+   parts {
+
+      part { name: "background";
+         type: RECT;
+         description { state: "default" 0.0;
+            color: 243 104 35 255;
+         }
+      }
+
+      part { name: "splashscreen_shadow";
+         type: RECT;
+         description { state: "default" 0.0;
+            rel1 {
+               to: "splashscreen";
+               offset: 2 2;
+            }
+            rel2 {
+               to: "splashscreen";
+               offset: 2 2;
+            }
+            color: 40 40 40 128;
+         }
+      }
+
+      part { name: "splashscreen";
+         description { state: "default" 0.0;
+            image.normal: "splash.png";
+            rel1.relative: 0.1 0.1;
+            rel2.relative: 0.9 0.7;
+         }
+      }
+
+      part { name: "hi-score_label";
+         type: TEXT;
+         effect: OUTLINE_SOFT_SHADOW;
+         description { state: "default" 0.0;
+            rel1 {
+               to: "splashscreen";
+               relative: 0.2 1.05;
+            }
+            rel2 {
+               to_x: "splashscreen";
+               relative: 0.8 0.8;
+            }
+            color_class: "hi-score";
+            text {
+               font: "Sans";
+               size: 12;
+               text: "HI-SCORE: ";
+               align: 0 0;
+            }
+         }
+      }
+
+      part { name: "hi-score";
+         type: TEXT;
+         effect: OUTLINE_SOFT_SHADOW;
+         description { state: "default" 0.0;
+            rel1.to: "hi-score_label";
+            rel2.to: "hi-score_label";
+            color_class: "hi-score";
+            text {
+               font: "Sans";
+               size: 12;
+               text: "000000";
+               align: 1 0;
+            }
+         }
+      }
+
+      part { name: "info_clip";
+         type: RECT;
+         description { state: "default" 0.0;
+            rel1 {
+               to_y: "hi-score";
+               relative: 0 1;
+            }
+            color: 255 255 255 255;
+         }
+         description { state: "hidden" 0.0;
+            inherit: "default" 0.0;
+            color: 255 255 255 0;
+         }
+      }
+
+      part { name: "info";
+         type: TEXT;
+         effect: OUTLINE_SOFT_SHADOW;
+         clip_to: "info_clip";
+         description { state: "default" 0.0;
+            rel1.to: "info_clip";
+            color_class: "info";
+            text {
+               font: "Sans";
+               size: 16;
+               text: "Press ENTER to play!";
+               align: 0.5 0.2;
+            }
+         }
+      }
+
+      part { name: "info2";
+         type: TEXT;
+         effect: OUTLINE_SOFT_SHADOW;
+         description { state: "default" 0.0;
+            rel1.to: "info_clip";
+            color_class: "info";
+            text {
+               font: "Sans";
+               size: 10;
+               text: "Or ESC to go back to your life";
+               align: 0.5 0.5;
+            }
+         }
+      }
+   }
+
+   programs {
+
+      program { name: "hide_info";
+         signal: "load";
+         action: STATE_SET "hidden" 0.0;
+         target: "info_clip";
+         transition: ACCELERATE 0.5;
+         in: 0.3 0;
+         after: "show_info";
+      }
+
+      program { name: "show_info";
+         action: STATE_SET "default" 0.0;
+         target: "info_clip";
+         transition: DECELERATE 0.5;
+         after: "hide_info";
+      }
+   }
+
+}
