@@ -11,13 +11,16 @@ THEME = join(DATA_DIR, "theme", "default.edj")
 
 def resize_cb(ee):
     bg = ee.data["bg"]
+    menu = ee.data["menu"]
     canvas = ee.evas
     bg.size = canvas.size
+    menu.size = canvas.size
 
 def menu_screen(ee):
     menu = Edje(ee.evas, file=THEME, group="menu")
     menu.size = ee.evas.size
     menu.show()
+    ee.data["menu"] = menu
 
 
 def game_main():
