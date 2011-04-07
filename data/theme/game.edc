@@ -1,7 +1,33 @@
+#define ADD_BUTTON(_pos, _name) \
+      part { name: _name"_bg"; \
+         description { state: "default" 0.0; \
+            min: 40 40; \
+            max: 40 40; \
+            align: 0 0; \
+            rel1.to: "ops_bar"; \
+            rel1.offset: (_pos * 40) 0; \
+            rel2.to: "ops_bar"; \
+            image.normal: "button.png"; \
+         } \
+      } \
+      part { name: _name; \
+         description { state: "default" 0.0; \
+            rel1.to: _name"_bg"; \
+            rel2.to: _name"_bg"; \
+            image.normal: _name"_bt.png"; \
+         } \
+      }
+
+
 group { name: "game";
 
    images {
       image: "background.png" COMP;
+      image: "button.png" COMP;
+      image: "plus_bt.png" COMP;
+      image: "minus_bt.png" COMP;
+      image: "times_bt.png" COMP;
+      image: "over_bt.png" COMP;
    }
 
    parts {
@@ -9,6 +35,91 @@ group { name: "game";
       part { name: "background";
          description { state: "default" 0.0;
             image.normal: "background.png";
+         }
+      }
+
+      part { name: "hud_bar";
+         type: RECT;
+         description { state: "default" 0.0;
+            color: 0 0 0 192;
+            max: 99999 50;
+            align: 0 0;
+         }
+      }
+
+      part { name: "hi-score";
+         type: TEXT;
+         effect: OUTLINE_SOFT_SHADOW;
+         description { state: "default" 0.0;
+            rel1.to: "hud_bar";
+            rel2 {
+               to_x: "ops_bar";
+               to_y: "hud_bar";
+               relative: 0 1;
+            }
+            color_class: "hi-score";
+            text {
+               font: "nines";
+               size: 18;
+               text: "000000000";
+               align: 0.5 0;
+            }
+         }
+      }
+
+      part { name: "score";
+         type: TEXT;
+         effect: OUTLINE_SOFT_SHADOW;
+         description { state: "default" 0.0;
+            rel1.to: "hud_bar";
+            rel2 {
+               to_x: "ops_bar";
+               to_y: "hud_bar";
+               relative: 0 1;
+            }
+            color_class: "hi-score";
+            text {
+               font: "nines";
+               size: 18;
+               text: "000000000";
+               align: 0.5 1;
+            }
+         }
+      }
+
+      part { name: "ops_bar";
+         type: RECT;
+         description { state: "default" 0.0;
+            visible: 0;
+            max: 160 40;
+            rel1.to: "hud_bar";
+            rel2.to: "hud_bar";
+            align: 0.5 0.5;
+         }
+      }
+
+      ADD_BUTTON(0, "plus")
+      ADD_BUTTON(1, "minus")
+      ADD_BUTTON(2, "times")
+      ADD_BUTTON(3, "over")
+
+      part { name: "time";
+         type: TEXT;
+         effect: OUTLINE_SOFT_SHADOW;
+         description { state: "default" 0.0;
+            rel1 {
+               to_x: "ops_bar";
+               to_y: "hud_bar";
+               relative: 1 0;
+            }
+            rel2.to: "hud_bar";
+            color_class: "hi-score";
+            text {
+               font: "nines";
+               size: 20;
+               text: "9:00";
+               align: 0.5 0.5;
+            }
          }
       }
 
