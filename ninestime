@@ -84,6 +84,14 @@ def game_screen(ee):
 	    ee.data["timer"].delete()
 	    game.hide()
 	    fire_hooks("show_menu")
+	elif kn  == "equal":
+	    game.signal_emit("plus", "")
+	elif kn  == "minus":
+	    game.signal_emit("minus", "")
+	elif kn  == "8":
+	    game.signal_emit("times", "")
+	elif kn  == "slash":
+	    game.signal_emit("over", "")
 
     game = Edje(ee.evas, file=THEME, group="game")
     game.size = ee.evas.size
