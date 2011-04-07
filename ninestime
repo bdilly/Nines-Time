@@ -2,12 +2,23 @@
 
 from os.path import abspath, join
 from ecore.evas import SoftwareX11
-from ecore import main_loop_begin
+from ecore import main_loop_begin, main_loop_quit, animator_frametime_set
 from edje import Edje
+from collections import defaultdict
+from functools import partial
 
 DATA_DIR = abspath("./data")
 THEME = join(DATA_DIR, "theme", "default.edj")
 
+
+hooks = defaultdict(list)
+
+def add_hook(kind, fn, *args, **kwargs):
+    hooks[kind].append(partial(fn, *args, **kwargs))
+
+def fire_hooks(kind, *args, **kwargs):
+    for hook in hooks[kind]:
+        hook(*args, **kwargs)
 
 def resize_cb(ee):
     bg = ee.data["bg"]
@@ -15,13 +26,45 @@ def resize_cb(ee):
     canvas = ee.evas
     bg.size = canvas.size
     menu.size = canvas.size
+    game.size = canvas.size
+
+def game_screen(ee):
+    def _on_show():
+        game.focus = True
+	game.show()
+
+    def _on_key_down(obj, event):
+	kn = event.keyname
+	if kn  == "Escape":
+	    game.hide()
+	    fire_hooks("show_menu")
+
+    game = Edje(ee.evas, file=THEME, group="game")
+    game.size = ee.evas.size
+    game.on_key_down_add(_on_key_down)
+    ee.data["game"] = game
+    add_hook("start_game", _on_show)
 
 def menu_screen(ee):
+    def _on_show():
+        menu.focus = True
+	menu.show()
+
+    def _on_key_down(obj, event):
+	kn = event.keyname
+	if kn  == "Escape":
+	    main_loop_quit()
+	elif kn == "Return":
+	    menu.hide()
+	    fire_hooks("start_game")
+
     menu = Edje(ee.evas, file=THEME, group="menu")
     menu.size = ee.evas.size
+    menu.on_key_down_add(_on_key_down)
+    menu.focus = True
     menu.show()
     ee.data["menu"] = menu
-
+    add_hook("show_menu", _on_show)
 
 def game_main():
     # FIXME get it from a file so user don't need to change it every time
@@ -42,6 +85,7 @@ def game_main():
     ee.title = "Nines Time"
 
     menu_screen(ee)
+    game_screen(ee)
 
     ee.show()
     main_loop_begin()
