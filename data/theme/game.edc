@@ -117,7 +117,7 @@ group { name: "game";
             text {
                font: "nines";
                size: 20;
-               text: "9:00";
+               text: "";
                align: 0.5 0.5;
             }
          }
