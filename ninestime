@@ -25,6 +25,7 @@ def fire_hooks(kind, *args, **kwargs):
 def resize_cb(ee):
     bg = ee.data["bg"]
     menu = ee.data["menu"]
+    game = ee.data["game"]
     canvas = ee.evas
     bg.size = canvas.size
     menu.size = canvas.size
