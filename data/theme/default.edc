@@ -33,4 +33,5 @@ fonts {
 collections {
 #include "menu.edc"
 #include "game.edc"
+#include "win.edc"
 }

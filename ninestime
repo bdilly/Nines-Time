@@ -26,16 +26,39 @@ def resize_cb(ee):
     bg = ee.data["bg"]
     menu = ee.data["menu"]
     game = ee.data["game"]
+    win = ee.data["win"]
     canvas = ee.evas
     bg.size = canvas.size
     menu.size = canvas.size
     game.size = canvas.size
+    win.size = canvas.size
+
+def win_screen(ee):
+    def _on_show():
+        win.focus = True
+	win.show()
+
+    def _on_key_down(obj, event):
+	kn = event.keyname
+	if kn  == "Escape":
+	    win.hide()
+	    fire_hooks("show_menu")
+
+    win = Edje(ee.evas, file=THEME, group="win")
+    win.size = ee.evas.size
+    win.on_key_down_add(_on_key_down)
+    ee.data["win"] = win
+    add_hook("win", _on_show)
 
 def game_screen(ee):
     def _tick(ee):
 	ee.data["time"] = ee.data["time"] - 1
 	time = strftime("%M:%S", gmtime(ee.data["time"]))
 	ee.data["game"].part_text_set("time", time)
+	if (ee.data["time"] < 1):
+	    game.hide()
+	    fire_hooks("win")
+	    return False
 	return True
 
     def _on_show(ee):
@@ -99,6 +122,7 @@ def game_main():
 
     menu_screen(ee)
     game_screen(ee)
+    win_screen(ee)
 
     # Sets the framerate of the game to 60FPS
     animator_frametime_set(1.0 / 60.0)
