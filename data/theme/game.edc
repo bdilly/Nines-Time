@@ -1,11 +1,14 @@
 group { name: "game";
 
+   images {
+      image: "background.png" COMP;
+   }
+
    parts {
 
       part { name: "background";
-         type: RECT;
          description { state: "default" 0.0;
-            color: 0 0 0 255;
+            image.normal: "background.png";
          }
       }
 
