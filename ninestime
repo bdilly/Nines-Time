@@ -23,15 +23,8 @@ def fire_hooks(kind, *args, **kwargs):
         hook(*args, **kwargs)
 
 def resize_cb(ee):
-    bg = ee.data["bg"]
-    menu = ee.data["menu"]
-    game = ee.data["game"]
-    win = ee.data["win"]
-    canvas = ee.evas
-    bg.size = canvas.size
-    menu.size = canvas.size
-    game.size = canvas.size
-    win.size = canvas.size
+    for d in ["bg", "menu", "game", "win"]:
+	ee.data[d].size = ee.evas.size
 
 def win_screen(ee):
     def _on_show():
