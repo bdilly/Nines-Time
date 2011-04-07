@@ -77,7 +77,7 @@ group { name: "game";
                to_y: "hud_bar";
                relative: 0 1;
             }
-            color_class: "hi-score";
+            color_class: "score";
             text {
                font: "nines";
                size: 18;
@@ -113,7 +113,7 @@ group { name: "game";
                relative: 1 0;
             }
             rel2.to: "hud_bar";
-            color_class: "hi-score";
+            color_class: "time";
             text {
                font: "nines";
                size: 20;
