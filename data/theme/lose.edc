@@ -1,0 +1,16 @@
+group { name: "lose";
+
+   images {
+      image: "lose.png" COMP;
+   }
+
+   parts {
+
+      part { name: "lose_screen";
+         description { state: "default" 0.0;
+            image.normal: "lose.png";
+         }
+      }
+
+   }
+}

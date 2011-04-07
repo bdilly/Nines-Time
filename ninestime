@@ -23,7 +23,7 @@ def fire_hooks(kind, *args, **kwargs):
         hook(*args, **kwargs)
 
 def resize_cb(ee):
-    for d in ["bg", "menu", "game", "win"]:
+    for d in ["bg", "menu", "game", "win", "lose"]:
 	ee.data[d].size = ee.evas.size
 
 def win_screen(ee):
@@ -42,6 +42,23 @@ def win_screen(ee):
     win.on_key_down_add(_on_key_down)
     ee.data["win"] = win
     add_hook("win", _on_show)
+
+def lose_screen(ee):
+    def _on_show():
+        lose.focus = True
+	lose.show()
+
+    def _on_key_down(obj, event):
+	kn = event.keyname
+	if kn  == "Escape":
+	    lose.hide()
+	    fire_hooks("show_menu")
+
+    lose = Edje(ee.evas, file=THEME, group="lose")
+    lose.size = ee.evas.size
+    lose.on_key_down_add(_on_key_down)
+    ee.data["lose"] = lose
+    add_hook("lose", _on_show)
 
 def game_screen(ee):
     def _tick(ee):
@@ -116,6 +133,7 @@ def game_main():
     menu_screen(ee)
     game_screen(ee)
     win_screen(ee)
+    lose_screen(ee)
 
     # Sets the framerate of the game to 60FPS
     animator_frametime_set(1.0 / 60.0)
