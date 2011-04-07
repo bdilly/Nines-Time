@@ -30,6 +30,7 @@ group { name: "menu";
 
       part { name: "splashscreen";
          description { state: "default" 0.0;
+            aspect: 1 1;
             image.normal: "splash.png";
             rel1.relative: 0.1 0.1;
             rel2.relative: 0.9 0.7;
