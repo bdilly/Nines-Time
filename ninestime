@@ -34,7 +34,7 @@ class Operation:
         self.game.part_drag_value_set(self.signal + "_block", 0, 0)
 
     def decrease_cooldown(self):
-        self.cooldown = self.cooldown - 20
+        self.cooldown = self.cooldown - 4
         drag = self.cooldown / 100.
         self.game.part_drag_value_set(self.signal + "_block", 0, drag)
         if not drag:
@@ -47,7 +47,7 @@ class Operation:
         self.game.signal_emit(self.signal, "")
         fire_hooks("sound", OPS_SOUND)
         self.cooldown = 100
-        timer_add(0.5, self.decrease_cooldown)
+        timer_add(0.1, self.decrease_cooldown)
         self.game.signal_emit(self.signal, "")
         drag = self.cooldown / 100.
         self.game.part_drag_value_set(self.signal + "_block", 0, drag)
