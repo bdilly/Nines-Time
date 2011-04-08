@@ -20,7 +20,7 @@ def add_hook(kind, fn, *args, **kwargs):
 
 def fire_hooks(kind, *args, **kwargs):
     for hook in hooks[kind]:
-        hook(*args, **kwargs)
+	hook(*args, **kwargs)
 
 def resize_cb(ee):
     for d in ["bg", "menu", "game", "win", "lose"]:
@@ -28,7 +28,7 @@ def resize_cb(ee):
 
 def win_screen(ee):
     def _on_show():
-        win.focus = True
+	win.focus = True
 	win.show()
 
     def _on_key_down(obj, event):
@@ -45,7 +45,7 @@ def win_screen(ee):
 
 def lose_screen(ee):
     def _on_show():
-        lose.focus = True
+	lose.focus = True
 	lose.show()
 
     def _on_key_down(obj, event):
@@ -75,7 +75,7 @@ def game_screen(ee):
 	ee.data["game"].part_text_set("time", "09:00")
 	ee.data["time"] = 540
 	ee.data["timer"] = timer_add(1, _tick, ee)
-        game.focus = True
+	game.focus = True
 	game.show()
 
     def _on_key_down(obj, event, ee):
@@ -101,7 +101,7 @@ def game_screen(ee):
 
 def menu_screen(ee):
     def _on_show():
-        menu.focus = True
+	menu.focus = True
 	menu.show()
 
     def _on_key_down(obj, event):

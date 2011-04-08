@@ -1,47 +1,47 @@
 #define ADD_BUTTON(_pos, _name) \
-      part { name: _name"_bg"; \
-         description { state: "default" 0.0; \
-            min: 40 40; \
-            max: 40 40; \
-            align: 0 0; \
-            rel1.to: "ops_bar"; \
-            rel1.offset: (_pos * 40) 0; \
-            rel2.to: "ops_bar"; \
-            image.normal: "button.png"; \
-         } \
-      } \
-      part { name: _name; \
-         description { state: "default" 0.0; \
-            rel1.to: _name"_bg"; \
-            rel2.to: _name"_bg"; \
-            image.normal: _name"_bt.png"; \
-         } \
-      } \
-      part { name: _name"_hi"; \
-         type: RECT; \
-         description { state: "default" 0.0; \
-            rel1.to: _name"_bg"; \
-            rel2.to: _name"_bg"; \
-            color: 0 255 0 0; \
-         } \
-         description { state: "visible" 0.0; \
-            inherit: "default" 0.0; \
-            color: 0 255 0 192; \
-         } \
-      } \
-      program { name: _name"_hi_on"; \
-         signal: _name; \
-         action: STATE_SET "visible" 0.0; \
-         target: _name"_hi"; \
-         transition: ACCELERATE 0.5; \
-         in: 0.3 0; \
-         after: _name"_hi_off"; \
-      } \
-      program { name: _name"_hi_off"; \
-         action: STATE_SET "default" 0.0; \
-         target: _name"_hi"; \
-         transition: DECELERATE 0.5; \
-      }
+part { name: _name"_bg"; \
+   description { state: "default" 0.0; \
+      min: 40 40; \
+      max: 40 40; \
+      align: 0 0; \
+      rel1.to: "ops_bar"; \
+      rel1.offset: (_pos * 40) 0; \
+      rel2.to: "ops_bar"; \
+      image.normal: "button.png"; \
+   } \
+} \
+part { name: _name; \
+   description { state: "default" 0.0; \
+      rel1.to: _name"_bg"; \
+      rel2.to: _name"_bg"; \
+      image.normal: _name"_bt.png"; \
+   } \
+} \
+part { name: _name"_hi"; \
+   type: RECT; \
+   description { state: "default" 0.0; \
+      rel1.to: _name"_bg"; \
+      rel2.to: _name"_bg"; \
+      color: 0 255 0 0; \
+   } \
+   description { state: "visible" 0.0; \
+      inherit: "default" 0.0; \
+      color: 0 255 0 192; \
+   } \
+} \
+program { name: _name"_hi_on"; \
+   signal: _name; \
+   action: STATE_SET "visible" 0.0; \
+   target: _name"_hi"; \
+   transition: ACCELERATE 0.5; \
+   in: 0.3 0; \
+   after: _name"_hi_off"; \
+} \
+program { name: _name"_hi_off"; \
+   action: STATE_SET "default" 0.0; \
+   target: _name"_hi"; \
+   transition: DECELERATE 0.5; \
+}
 
 
 group { name: "game";
