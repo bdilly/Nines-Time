@@ -1,4 +1,9 @@
 #!/usr/bin/python
+#
+# Bruno Dilly, Joao Vita, Rafael Antognolli and Leandro Pereira wrote this file.
+# As long as you retain this notice you can do whatever you want with this stuff. If we
+# meet some day, and you think this stuff if worth it, you can buy me a beer in return.
+#
 
 from os.path import abspath, join
 from ecore.evas import SoftwareX11
