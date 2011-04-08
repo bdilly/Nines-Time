@@ -131,13 +131,13 @@ def game_screen(ee):
             ee.data["timer"].delete()
             game.hide()
             fire_hooks("show_menu")
-        elif kn  == "equal":
+        elif kn  in ["equal", "KP_Add"]:
             ee.data["player"].plus.fire()
-        elif kn  == "minus":
+        elif kn  in ["minus", "KP_Subtract"]:
             ee.data["player"].minus.fire()
-        elif kn  == "8":
+        elif kn  in ["8", "KP_Multiply"]:
             ee.data["player"].times.fire()
-        elif kn  == "slash":
+        elif kn  in ["slash", "KP_Divide"]:
             ee.data["player"].over.fire()
 
     game = Edje(ee.evas, file=THEME, group="game")
