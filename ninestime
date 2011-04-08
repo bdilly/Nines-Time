@@ -3,7 +3,7 @@
 from os.path import abspath, join
 from ecore.evas import SoftwareX11
 from ecore import main_loop_begin, main_loop_quit, animator_frametime_set, \
-	timer_add
+        timer_add
 from edje import Edje
 from collections import defaultdict
 from functools import partial
@@ -20,22 +20,22 @@ def add_hook(kind, fn, *args, **kwargs):
 
 def fire_hooks(kind, *args, **kwargs):
     for hook in hooks[kind]:
-	hook(*args, **kwargs)
+        hook(*args, **kwargs)
 
 def resize_cb(ee):
     for d in ["bg", "menu", "game", "win", "lose"]:
-	ee.data[d].size = ee.evas.size
+        ee.data[d].size = ee.evas.size
 
 def win_screen(ee):
     def _on_show():
-	win.focus = True
-	win.show()
+        win.focus = True
+        win.show()
 
     def _on_key_down(obj, event):
-	kn = event.keyname
-	if kn  == "Escape":
-	    win.hide()
-	    fire_hooks("show_menu")
+        kn = event.keyname
+        if kn  == "Escape":
+            win.hide()
+            fire_hooks("show_menu")
 
     win = Edje(ee.evas, file=THEME, group="win")
     win.size = ee.evas.size
@@ -45,14 +45,14 @@ def win_screen(ee):
 
 def lose_screen(ee):
     def _on_show():
-	lose.focus = True
-	lose.show()
+        lose.focus = True
+        lose.show()
 
     def _on_key_down(obj, event):
-	kn = event.keyname
-	if kn  == "Escape":
-	    lose.hide()
-	    fire_hooks("show_menu")
+        kn = event.keyname
+        if kn  == "Escape":
+            lose.hide()
+            fire_hooks("show_menu")
 
     lose = Edje(ee.evas, file=THEME, group="lose")
     lose.size = ee.evas.size
@@ -62,36 +62,36 @@ def lose_screen(ee):
 
 def game_screen(ee):
     def _tick(ee):
-	ee.data["time"] = ee.data["time"] - 1
-	time = strftime("%M:%S", gmtime(ee.data["time"]))
-	ee.data["game"].part_text_set("time", time)
-	if (ee.data["time"] < 1):
-	    game.hide()
-	    fire_hooks("win")
-	    return False
-	return True
+        ee.data["time"] = ee.data["time"] - 1
+        time = strftime("%M:%S", gmtime(ee.data["time"]))
+        ee.data["game"].part_text_set("time", time)
+        if (ee.data["time"] < 1):
+            game.hide()
+            fire_hooks("win")
+            return False
+        return True
 
     def _on_show(ee):
-	ee.data["game"].part_text_set("time", "09:00")
-	ee.data["time"] = 540
-	ee.data["timer"] = timer_add(1, _tick, ee)
-	game.focus = True
-	game.show()
+        ee.data["game"].part_text_set("time", "09:00")
+        ee.data["time"] = 540
+        ee.data["timer"] = timer_add(1, _tick, ee)
+        game.focus = True
+        game.show()
 
     def _on_key_down(obj, event, ee):
-	kn = event.keyname
-	if kn  == "Escape":
-	    ee.data["timer"].delete()
-	    game.hide()
-	    fire_hooks("show_menu")
-	elif kn  == "equal":
-	    game.signal_emit("plus", "")
-	elif kn  == "minus":
-	    game.signal_emit("minus", "")
-	elif kn  == "8":
-	    game.signal_emit("times", "")
-	elif kn  == "slash":
-	    game.signal_emit("over", "")
+        kn = event.keyname
+        if kn  == "Escape":
+            ee.data["timer"].delete()
+            game.hide()
+            fire_hooks("show_menu")
+        elif kn  == "equal":
+            game.signal_emit("plus", "")
+        elif kn  == "minus":
+            game.signal_emit("minus", "")
+        elif kn  == "8":
+            game.signal_emit("times", "")
+        elif kn  == "slash":
+            game.signal_emit("over", "")
 
     game = Edje(ee.evas, file=THEME, group="game")
     game.size = ee.evas.size
@@ -101,16 +101,16 @@ def game_screen(ee):
 
 def menu_screen(ee):
     def _on_show():
-	menu.focus = True
-	menu.show()
+        menu.focus = True
+        menu.show()
 
     def _on_key_down(obj, event):
-	kn = event.keyname
-	if kn  == "Escape":
-	    main_loop_quit()
-	elif kn == "Return":
-	    menu.hide()
-	    fire_hooks("start_game")
+        kn = event.keyname
+        if kn  == "Escape":
+            main_loop_quit()
+        elif kn == "Return":
+            menu.hide()
+            fire_hooks("start_game")
 
     menu = Edje(ee.evas, file=THEME, group="menu")
     menu.size = ee.evas.size
