@@ -8,9 +8,15 @@ from edje import Edje
 from collections import defaultdict
 from functools import partial
 from time import strftime, gmtime
+from emotion import Emotion
 
 DATA_DIR = abspath("./data")
 THEME = join(DATA_DIR, "theme", "default.edj")
+MENU_MUSIC = "flanicx_-_2_dias_(synth_wave_gap_solo).mp3"
+GAME_MUSIC = "annabloom_-_Percussion_Loops_1a_(5_4).mp3"
+OPS_SOUND = "111872__candlegravity__tweak_scratch_2.wav"
+RIGHT_SOUND = "111877__candlegravity__zipper_1.wav"
+WRONG_SOUND = "111873__candlegravity__tweat_down_1.wav"
 
 
 hooks = defaultdict(list)
@@ -76,6 +82,7 @@ def game_screen(ee):
         ee.data["time"] = 540
         ee.data["timer"] = timer_add(1, _tick, ee)
         game.focus = True
+        fire_hooks("music", GAME_MUSIC)
         game.show()
 
     def _on_key_down(obj, event, ee):
@@ -86,12 +93,16 @@ def game_screen(ee):
             fire_hooks("show_menu")
         elif kn  == "equal":
             game.signal_emit("plus", "")
+            fire_hooks("sound", OPS_SOUND)
         elif kn  == "minus":
             game.signal_emit("minus", "")
+            fire_hooks("sound", OPS_SOUND)
         elif kn  == "8":
             game.signal_emit("times", "")
+            fire_hooks("sound", OPS_SOUND)
         elif kn  == "slash":
             game.signal_emit("over", "")
+            fire_hooks("sound", OPS_SOUND)
 
     game = Edje(ee.evas, file=THEME, group="game")
     game.size = ee.evas.size
@@ -102,6 +113,7 @@ def game_screen(ee):
 def menu_screen(ee):
     def _on_show():
         menu.focus = True
+        fire_hooks("music", MENU_MUSIC)
         menu.show()
 
     def _on_key_down(obj, event):
@@ -116,9 +128,26 @@ def menu_screen(ee):
     menu.size = ee.evas.size
     menu.on_key_down_add(_on_key_down)
     menu.focus = True
+    fire_hooks("music", MENU_MUSIC)
     menu.show()
     ee.data["menu"] = menu
     add_hook("show_menu", _on_show)
+
+def sweet_emotion(ee):
+    def play(player, source = ""):
+        if source:
+            file_path = join(DATA_DIR, "sound", source)
+        else:
+            file_path = player.file
+        player.file = ""
+        player.file = file_path
+        player.play = True
+
+    music_player = Emotion(ee.evas, module_filename="gstreamer")
+    music_player.on_playback_finished_add(play)
+    sound_player = Emotion(ee.evas, module_filename="gstreamer")
+    add_hook("music", play, music_player)
+    add_hook("sound", play, sound_player)
 
 def game_main():
     # FIXME get it from a file so user don't need to change it every time
@@ -138,6 +167,7 @@ def game_main():
     ee.callback_resize = resize_cb
     ee.title = "Nines Time"
 
+    sweet_emotion(ee)
     menu_screen(ee)
     game_screen(ee)
     win_screen(ee)
