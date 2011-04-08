@@ -21,6 +21,45 @@ WRONG_SOUND = "111873__candlegravity__tweat_down_1.wav"
 
 hooks = defaultdict(list)
 
+class Operation:
+    def __init__(self, game, signal):
+        self.signal = signal
+        self.game = game
+        self.cooldown = 0
+        self.game.part_drag_value_set(self.signal + "_block", 0, 1)
+
+    def decrease_cooldown(self):
+        self.cooldown = self.cooldown - 20
+        drag = 1 - self.cooldown / 100.
+        self.game.part_drag_value_set(self.signal + "_block", 0, drag)
+        return self.cooldown
+
+    def fire(self):
+        if self.cooldown:
+            return
+        self.game.signal_emit(self.signal, "")
+        fire_hooks("sound", OPS_SOUND)
+        self.cooldown = 100
+        timer_add(0.5, self.decrease_cooldown)
+        self.game.signal_emit(self.signal, "")
+        drag = 1 - self.cooldown / 100.
+        self.game.part_drag_value_set(self.signal + "_block", 0, drag)
+
+
+class Player:
+    def  __init__(self, ee):
+        game = ee.data["game"]
+        self.minus = Operation(game, "minus")
+        self.plus = Operation(game, "plus")
+        self.times = Operation(game, "times")
+        self.over = Operation(game, "over")
+        self.score = 0
+        self.ee = ee
+
+    def score_inc(self, delta):
+        self.score = self.score + delta
+
+
 def add_hook(kind, fn, *args, **kwargs):
     hooks[kind].append(partial(fn, *args, **kwargs))
 
@@ -81,8 +120,9 @@ def game_screen(ee):
         ee.data["game"].part_text_set("time", "09:00")
         ee.data["time"] = 540
         ee.data["timer"] = timer_add(1, _tick, ee)
-        game.focus = True
         fire_hooks("music", GAME_MUSIC)
+        ee.data["player"] = Player(ee)
+        game.focus = True
         game.show()
 
     def _on_key_down(obj, event, ee):
@@ -92,17 +132,13 @@ def game_screen(ee):
             game.hide()
             fire_hooks("show_menu")
         elif kn  == "equal":
-            game.signal_emit("plus", "")
-            fire_hooks("sound", OPS_SOUND)
+            ee.data["player"].plus.fire()
         elif kn  == "minus":
-            game.signal_emit("minus", "")
-            fire_hooks("sound", OPS_SOUND)
+            ee.data["player"].minus.fire()
         elif kn  == "8":
-            game.signal_emit("times", "")
-            fire_hooks("sound", OPS_SOUND)
+            ee.data["player"].times.fire()
         elif kn  == "slash":
-            game.signal_emit("over", "")
-            fire_hooks("sound", OPS_SOUND)
+            ee.data["player"].over.fire()
 
     game = Edje(ee.evas, file=THEME, group="game")
     game.size = ee.evas.size

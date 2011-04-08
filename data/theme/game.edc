@@ -17,31 +17,31 @@ part { name: _name; \
       image.normal: _name"_bt.png"; \
    } \
 } \
-part { name: _name"_hi"; \
+part { name: _name"_block"; \
    type: RECT; \
+   dragable { \
+      confine: _name"_bg"; \
+      x: 0 0 0; \
+      y: 1 1 0; \
+   } \
    description { state: "default" 0.0; \
       rel1.to: _name"_bg"; \
       rel2.to: _name"_bg"; \
-      color: 0 255 0 0; \
-   } \
-   description { state: "visible" 0.0; \
-      inherit: "default" 0.0; \
-      color: 0 255 0 192; \
+      max: 1 1; \
+      visible: 0; \
    } \
 } \
-program { name: _name"_hi_on"; \
-   signal: _name; \
-   action: STATE_SET "visible" 0.0; \
-   target: _name"_hi"; \
-   transition: ACCELERATE 0.5; \
-   in: 0.3 0; \
-   after: _name"_hi_off"; \
+part { name: _name"_shadow"; \
+   type: RECT; \
+   description { state: "default" 0.0; \
+      rel1 { \
+        to_x: _name"_bg"; \
+        to_y: _name"_block"; \
+      } \
+      rel2.to: _name"_bg"; \
+      color: 0 0 0 192; \
+   } \
 } \
-program { name: _name"_hi_off"; \
-   action: STATE_SET "default" 0.0; \
-   target: _name"_hi"; \
-   transition: DECELERATE 0.5; \
-}
 
 
 group { name: "game";
