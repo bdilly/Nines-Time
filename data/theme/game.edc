@@ -176,6 +176,16 @@ group { name: "game";
         }
     }
 
+      part { name: "hud_bar_shadow";
+         type: RECT;
+         description { state: "default" 0.0;
+            min: 400 66;
+            max: 400 66;
+            align: 0 0;
+            color: 0 0 0 92;
+         }
+      }
+
       part { name: "hud_bar";
          description { state: "default" 0.0;
             min: 400 64;
