@@ -281,10 +281,16 @@ class GameScreen(Screen):
         self.numbers_area = NumbersArea(ee.evas)
         self.screen.part_swallow("numbers_area", self.numbers_area)
 
+    def _tock(self):
+        self.ee.data["time"] = self.ee.data["time"] - 1
+        day = ((540 - self.ee.data["time"]) / 60) + 1
+        self.ee.data["game"].part_text_set("time", "Day " + str(day))
+        if (self.ee.data["time"] < 1):
+            return False
+        return True
+
     def _tick(self):
         self.ee.data["time"] = self.ee.data["time"] - 1
-        time = strftime("%M:%S", gmtime(self.ee.data["time"]))
-        self.ee.data["game"].part_text_set("time", time)
         if (self.ee.data["time"] < 1):
             game.hide()
             Hooks.fire("win")
@@ -296,9 +302,10 @@ class GameScreen(Screen):
         self.numbers_area.add_tuple(pair, op)
 
     def on_show(self):
-        self.ee.data["game"].part_text_set("time", "09:00")
+        self.ee.data["game"].part_text_set("time", "Day 1")
         self.ee.data["time"] = 540
         self.ee.data["timer"] = timer_add(1, self._tick)
+        self.ee.data["timer2"] = timer_add(60, self._tock)
         Hooks.fire("music", GAME_MUSIC)
         self.ee.data["player"] = Player(self.ee)
         self.ee.data["randomgen"] = RandomGen(self._gen_cb)
@@ -310,6 +317,7 @@ class GameScreen(Screen):
         kn = event.key
         if kn == "Escape":
             self.ee.data.pop("timer").delete()
+            self.ee.data.pop("timer2").delete()
             print "should delete randomgen"
             self.ee.data["randomgen"].stop()
             del self.ee.data["randomgen"]
