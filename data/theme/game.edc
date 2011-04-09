@@ -254,7 +254,7 @@ group { name: "game";
             }
             rel2 {
                relative: 1.0 1.0;
-               offset: -21 -100;
+               offset: -21 -21;
             }
          }
       }
@@ -262,15 +262,8 @@ group { name: "game";
       part { name: "numbers_area";
          type: SWALLOW;
          description { state: "default" 0.0;
-            rel1 {
-               to: "hud_bar";
-               relative: 0.0 1.0;
-               offset: 20 50;
-            }
-            rel2 {
-               relative: 1.0 1.0;
-               offset: -21 -100;
-            }
+            rel1.to: "numbers_area_bg";
+            rel2.to: "numbers_area_bg";
          }
       }
 

@@ -27,8 +27,9 @@ WRONG_SOUND = "111873__candlegravity__tweat_down_1.wav"
 
 
 class Operation:
-    def __init__(self, game, signal):
+    def __init__(self, game, signal, symbol):
         self.signal = signal
+        self.symbol = symbol
         self.game = game
         self.cooldown = 0
         self.game.part_drag_value_set(self.signal + "_block", 0, 0)
@@ -54,8 +55,8 @@ class Operation:
             self.game.on_key_down_del(self.input_text)
             self.game.signal_emit("result_box_hide", "")
             self.game.part_text_set("result_text", "type result")
-            if kn == "Return":
-                print "Result = " + self.result
+            result = int(self.result)
+            Hooks.fire("resultready", self.symbol, result)
             self.result = ""
 
     def fire(self):
@@ -74,10 +75,10 @@ class Operation:
 class Player:
     def  __init__(self, ee):
         game = ee.data["game"]
-        self.minus = Operation(game, "minus")
-        self.plus = Operation(game, "plus")
-        self.times = Operation(game, "times")
-        self.over = Operation(game, "over")
+        self.minus = Operation(game, "minus", '-')
+        self.plus = Operation(game, "plus", '+')
+        self.times = Operation(game, "times", '*')
+        self.over = Operation(game, "over", '/')
         self.score = 0
         self.ee = ee
 
@@ -243,11 +244,20 @@ class VisualNumber:
 
 class NumbersArea(ClippedSmartObject):
     """
-    Numbers will run from 0 to 100 (% of their "road").
+    Numbers will run from 0 to 1000.
 
     Each tick of the clock will move them by 1, multiplied by a number of
     pixels plus/times a speed (difficulty).
+
+    speed should go from 10 to 100
     """
+
+    min_run = 0
+    max_run = 1000
+
+    min_speed = 10.0
+    max_speed = 100.0
+
     def __init__(self, canvas):
         ClippedSmartObject.__init__(self, canvas)
         self.numbers = [] # list of tuples (visual number, position [0-100])
@@ -255,14 +265,15 @@ class NumbersArea(ClippedSmartObject):
         self.n2 = None
         self.op = None
         self.anim = None
-
-    # def add(self, number):
-    #     self.numbers.append(VisualNumber(self.evas, number))
+        self.speed = self.min_speed
 
     def _anim_cb(self):
         for i, vn in enumerate(self.numbers):
-            vn = (vn[0], vn[1] + 1)
+            vn = (vn[0], vn[1] + self.speed / 10)
             self.numbers[i] = vn
+            if vn[1] > self.max_run:
+                self.expire_number(vn[0])
+                self.numbers.pop(i)
             self.move_number(vn[0], vn[1])
         return True
 
@@ -282,20 +293,41 @@ class NumbersArea(ClippedSmartObject):
             mystr = str(self.n1) + ' ' + self.op + ' ' + str(self.n2)
             number = eval(mystr)
             visual_number = VisualNumber(self.evas, number)
+            self.member_add(visual_number.img)
             self.numbers.append((visual_number, 0))
             self.move_number(visual_number, 0)
 
         self.n1 = VisualNumber(self.evas, pair[0])
+        self.member_add(self.n1.img)
         self.n2 = VisualNumber(self.evas, pair[1])
+        self.member_add(self.n2.img)
         self.n1.move(self.pos[0] + 20, self.pos[1])
         self.n2.move(self.pos[0] + 200, self.pos[1])
         self.op = op
 
     def move_number(self, vn, pos):
         pos_x = self.pos[0] + self.size[0] / 2 - vn.size()[0] / 2
-        pos_y = self.pos[1] + 100 + pos * (self.size[1] - 100 - vn.size()[1]) / 100
-        print "move number to pos:", pos, (pos_x, pos_y)
+        pos_y = self.pos[1] + 100 + pos * (self.size[1] - 100 - vn.size()[1]) / self.max_run
         vn.move(pos_x, pos_y)
+
+    def expire_number(self, vn):
+        print "number", vn, "has reached its end. Apply penality!"
+
+    def apply_result_operation(self, op, result):
+        self.check_operation(op)
+        n1, pos = self.numbers.pop(0)
+        n2, pos = self.numbers.pop(0)
+        r = eval(str(n1) + ' ' + op + ' ' + str(n2))
+        if r != result:
+            print "wrong result! correct one should be", r
+        else:
+            print "result correct!", r
+
+    def check_operation(self, op):
+        if len(self.numbers) < 2:
+            return
+        if op == '/' and self.numbers[1][1].number() == 0:
+            return
 
     def clear(self):
         self.numbers = []
@@ -306,7 +338,8 @@ class NumbersArea(ClippedSmartObject):
         self.anim = None
 
     def resize(self, w, h):
-        print "resized to:", (w, h)
+        for vn in self.numbers:
+            self.move_number(vn[0], vn[1])
 
 
 class GameScreen(Screen):
@@ -314,6 +347,7 @@ class GameScreen(Screen):
         Screen.__init__(self, ee, "game", on_show_hook_name="start_game")
         self.numbers_area = NumbersArea(ee.evas)
         self.screen.part_swallow("numbers_area", self.numbers_area)
+        Hooks.add("resultready", self.apply_result_operation)
 
     def _tock(self):
         self.ee.data["time"] = self.ee.data["time"] - 1
@@ -352,7 +386,6 @@ class GameScreen(Screen):
         if kn == "Escape":
             self.ee.data.pop("timer").delete()
             self.ee.data.pop("timer2").delete()
-            print "should delete randomgen"
             self.ee.data["randomgen"].stop()
             del self.ee.data["randomgen"]
             self.numbers_area.clear()
@@ -366,6 +399,10 @@ class GameScreen(Screen):
             self.ee.data["player"].times.fire()
         elif kn in ["slash", "KP_Divide"]:
             self.ee.data["player"].over.fire()
+
+    def apply_result_operation(self, op, result):
+        print "apply result for", op, result
+        self.numbers_area.apply_result_operation(op, result)
 
 class MenuScreen(Screen):
     def __init__(self, ee):
