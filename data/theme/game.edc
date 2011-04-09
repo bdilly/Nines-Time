@@ -87,6 +87,10 @@ group { name: "game";
       image: "minus_bt.png" COMP;
       image: "times_bt.png" COMP;
       image: "over_bt.png" COMP;
+      image: "plus_full.png" COMP;
+      image: "minus_full.png" COMP;
+      image: "times_full.png" COMP;
+      image: "over_full.png" COMP;
       image: "sky0.png" COMP;
       image: "sky1.png" COMP;
       image: "sky2.png" COMP;
@@ -289,26 +293,26 @@ group { name: "game";
             rel1.to: "result_box";
             rel2.to: "result_box";
             visible: 0;
-            image.normal: "over_bt.png";
+            image.normal: "over_full.png";
          }
          description { state: "plus" 0.0;
             inherit: "default" 0.0;
-            image.normal: "plus_bt.png";
+            image.normal: "plus_full.png";
             visible: 1;
          }
          description { state: "minus" 0.0;
             inherit: "default" 0.0;
-            image.normal: "minus_bt.png";
+            image.normal: "minus_full.png";
             visible: 1;
          }
          description { state: "times" 0.0;
             inherit: "default" 0.0;
-            image.normal: "times_bt.png";
+            image.normal: "times_full.png";
             visible: 1;
          }
          description { state: "over" 0.0;
             inherit: "default" 0.0;
-            image.normal: "over_bt.png";
+            image.normal: "over_full.png";
             visible: 1;
          }
       }
