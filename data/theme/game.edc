@@ -232,6 +232,8 @@ group { name: "game";
       part { name: "hud_bar_shadow";
          type: RECT;
          description { state: "default" 0.0;
+            rel1.to: "hud_bar";
+            rel1.to: "hud_bar";
             min: 400 66;
             max: 400 66;
             align: 0 0;
@@ -244,9 +246,20 @@ group { name: "game";
             min: 400 64;
             max: 400 64;
             align: 0 0;
+            rel1.offset: 0 -66;
             image.normal: "top-bar.png";
          }
+         description { state: "visible" 0.0;
+            inherit: "default" 0.0;
+            rel1.offset: 0 0;
+         }
       }
+         program { name: "hud_anim";
+            signal: "start";
+            action: STATE_SET "visible" 0.0;
+            transition: DECELERATE 1;
+            target: "hud_bar";
+         }
 
       part { name: "numbers_area_bg";
          type: RECT;
@@ -441,6 +454,7 @@ group { name: "game";
             target: "clo";
             target: "result_text";
             target: "operation_chosen";
+            target: "hud_bar";
             after: "start_sig";
        }
        program { name: "start_sig";
