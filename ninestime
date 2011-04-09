@@ -165,17 +165,17 @@ class GameScreen(Screen):
 
     def on_key_down(self, obj, event):
         kn = event.keyname
-        if kn  == "Escape":
+        if kn == "Escape":
             self.ee.data["timer"].delete()
             self.hide()
             fire_hooks("show_menu")
-        elif kn  in ["equal", "KP_Add"]:
+        elif kn in ["equal", "KP_Add"]:
             self.ee.data["player"].plus.fire()
-        elif kn  in ["minus", "KP_Subtract"]:
+        elif kn in ["minus", "KP_Subtract"]:
             self.ee.data["player"].minus.fire()
-        elif kn  in ["8", "KP_Multiply"]:
+        elif kn in ["8", "KP_Multiply"]:
             self.ee.data["player"].times.fire()
-        elif kn  in ["slash", "KP_Divide"]:
+        elif kn in ["slash", "KP_Divide"]:
             self.ee.data["player"].over.fire()
 
 class MenuScreen(Screen):
