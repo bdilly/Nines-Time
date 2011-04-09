@@ -458,7 +458,6 @@ class NumbersArea(ClippedSmartObject):
     def check_operation(self, op):
         if len(self.numbers) < 2:
             return
-        print self.numbers[1]
         if op == '/' and self.numbers[1][0].number_get() == 0:
             return
 
