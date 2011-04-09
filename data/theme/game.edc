@@ -185,6 +185,7 @@ group { name: "game";
             description { state: "default" 0.0;
                   min: 1330 480;
                   max: 1330 480;
+                  align: 0 0;
                fill {
                   smooth: 0;
                   origin {
@@ -217,7 +218,7 @@ group { name: "game";
             signal: "start";
             source: "";
             action: STATE_SET "drift" 0.0;
-            transition: LINEAR 60;
+            transition: LINEAR 120;
             target: "clo";
             after: "anim2";
          }
