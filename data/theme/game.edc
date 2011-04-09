@@ -127,6 +127,7 @@ group { name: "game";
       image: "sky2.png" COMP;
       image: "top-bar.png" COMP;
       image: "clo.png" COMP;
+      image: "9cloud.png" COMP;
    }
 
    parts {
@@ -447,6 +448,16 @@ group { name: "game";
                text: "";
                align: 0.5 0.5;
             }
+         }
+      }
+
+      part { name: "master9";
+         description { state: "default" 0.0;
+            image.normal: "9cloud.png";
+            min: 150 80;
+            max: 150 80;
+            rel1.offset: 280 70;
+            align: 0 0;
          }
       }
 
