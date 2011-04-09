@@ -60,10 +60,9 @@ class Operation:
         if kn in self.digits:
             self.result += kn
             self.game.part_text_set("result_text", self.result)
+            self.game.signal_emit("result_stop_blinking", "")
         elif kn == "Escape" or kn == "Return":
             self.game.on_key_down_del(self.input_text)
-            self.game.signal_emit("result_box_hide", "")
-            self.game.part_text_set("result_text", "type result")
             result = int(self.result)
             Hooks.fire("resultready", self.symbol, result)
             self.result = ""
@@ -329,18 +328,19 @@ class NumbersArea(ClippedSmartObject):
     min_speed = 10.0
     max_speed = 100.0
 
-    def __init__(self, canvas):
-        ClippedSmartObject.__init__(self, canvas)
+    def __init__(self, ee):
+        ClippedSmartObject.__init__(self, ee.evas)
         self.numbers = [] # list of tuples (visual number, position [0-100])
         self.n1 = None
         self.n2 = None
-        self.op = VisualOperation(canvas, None)
+        self.op = VisualOperation(ee.evas, None)
         self.member_add(self.op)
         self.op.resize(50, 50)
         self.op.move(self.pos[0] + 150, self.pos[1])
         self.op.show()
         self.anim = None
         self.speed = self.min_speed
+        self.ee = ee
 
     def _anim_cb(self):
         for i, vn in enumerate(self.numbers):
@@ -403,8 +403,10 @@ class NumbersArea(ClippedSmartObject):
         n2, pos = self.numbers.pop(0)
         r = eval(str(n1) + ' ' + op + ' ' + str(n2))
         if r != result:
+            self.ee.data["game"].signal_emit("result_wrong", "")
             print "wrong result! correct one should be", r
         else:
+            self.ee.data["game"].signal_emit("result_correct", "")
             print "result correct!", r
         n1.delete()
         n2.delete()
@@ -437,7 +439,7 @@ class NumbersArea(ClippedSmartObject):
 class GameScreen(Screen):
     def __init__(self, ee):
         Screen.__init__(self, ee, "game", on_show_hook_name="start_game")
-        self.numbers_area = NumbersArea(ee.evas)
+        self.numbers_area = NumbersArea(ee)
         self.screen.part_swallow("numbers_area", self.numbers_area)
         Hooks.add("resultready", self.apply_result_operation)
 
@@ -486,12 +488,16 @@ class GameScreen(Screen):
             Hooks.fire("show_menu")
         elif kn in ["plus", "KP_Add"]:
             self.ee.data["player"].plus.fire()
+            self.ee.data["game"].part_text_set("result_text", "|")
         elif kn in ["minus", "KP_Subtract"]:
             self.ee.data["player"].minus.fire()
+            self.ee.data["game"].part_text_set("result_text", "|")
         elif kn in ["asterisk", "KP_Multiply"]:
             self.ee.data["player"].times.fire()
+            self.ee.data["game"].part_text_set("result_text", "|")
         elif kn in ["slash", "KP_Divide"]:
             self.ee.data["player"].over.fire()
+            self.ee.data["game"].part_text_set("result_text", "|")
 
     def apply_result_operation(self, op, result):
         print "apply result for", op, result

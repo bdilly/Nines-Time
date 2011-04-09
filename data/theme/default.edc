@@ -24,6 +24,12 @@ color_classes {
       color3: 40 40 40 128;
    }
 
+   color_class { name: "result";
+      color: 255 255 255 255;
+      color2: 40 40 40 128;
+      color3: 40 40 40 128;
+   }
+
 }
 
 fonts {

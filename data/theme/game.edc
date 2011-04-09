@@ -1,34 +1,34 @@
 #define ADD_OPERATION(_name) \
-    part { name: "operation_"_name; \
-        description { state: "default" 0.0; \
-            min: 30 30; \
-            max: 30 30; \
-            rel1.to: "result_box"; \
-            rel2.to: "result_box"; \
-            color: 255 255 255 0; \
-            image.normal: _name"_full.png"; \
-        } \
-        description { state: "visible" 0.0; \
-            inherit: "default" 0.0; \
-            color: 255 255 255 255; \
-        } \
-        description { state: "big" 0.0; \
-            inherit: "default" 0.0; \
-            color: 255 255 255 0; \
-            min: 600 600; \
-            max: 600 600; \
-        } \
+part { name: "operation_"_name; \
+    description { state: "default" 0.0; \
+        min: 30 30; \
+        max: 30 30; \
+        rel1.to: "hud_bar"; \
+        rel1.relative: 0 1; \
+        color: 255 255 255 0; \
+        image.normal: _name"_full.png"; \
     } \
-    program { name: _name"_operation_show"; \
-        signal: _name; \
-        action: STATE_SET "visible" 0.0; \
-        target: "operation_"_name; \
-        after: _name"_operation_enlarge"; \
+    description { state: "visible" 0.0; \
+        inherit: "default" 0.0; \
+        color: 255 255 255 255; \
     } \
-    program { name: _name"_operation_enlarge"; \
-        action: STATE_SET "big" 0.0; \
-        target: "operation_"_name; \
-        transition: ACCELERATE 0.5; \
+    description { state: "big" 0.0; \
+        inherit: "default" 0.0; \
+        color: 255 255 255 0; \
+        min: 600 600; \
+        max: 600 600; \
+    } \
+} \
+program { name: _name"_operation_show"; \
+    signal: _name; \
+    action: STATE_SET "visible" 0.0; \
+    target: "operation_"_name; \
+    after: _name"_operation_enlarge"; \
+} \
+program { name: _name"_operation_enlarge"; \
+    action: STATE_SET "big" 0.0; \
+    target: "operation_"_name; \
+    transition: ACCELERATE 0.5; \
         after: _name"_hide_op"; \
     } \
     program { name: _name"_hide_op"; \
@@ -316,52 +316,61 @@ group { name: "game";
          }
       }
 
-      part { name: "result_box";
-         type: RECT;
-         description { state: "default" 0.0;
-            rel1.to: "hud_bar";
-            rel1 {
-                relative: 0 1;
-            }
-            max: 200 200;
-            color: 0 0 0 192;
-            visible: 0;
-         }
-         description { state: "visible" 0.0;
-            inherit: "default" 0.0;
-            visible: 1;
-         }
-      }
-
         ADD_OPERATION("minus")
         ADD_OPERATION("plus")
         ADD_OPERATION("times")
         ADD_OPERATION("over")
 
+      part { name: "result_clip";
+         type: RECT;
+         description { state: "default " 0.0;
+            rel1.to: "hud_bar";
+            rel1.relative: 0 1;
+            color: 255 255 255 0;
+         }
+         description { state: "visible" 0.0;
+            inherit: "default" 0.0;
+            color: 255 255 255 255;
+         }
+         description { state: "correct" 0.0;
+            inherit: "default" 0.0;
+            color: 255 255 255 0;
+         }
+         description { state: "wrong" 0.0;
+            inherit: "default" 0.0;
+            color: 255 0 0 255;
+         }
+      }
+
       part { name: "result_text";
+         clip_to: "result_clip";
          type: TEXT;
          description { state: "default " 0.0;
-            rel1.to: "result_box";
-            rel2.to: "result_box";
-            color: 255 0 255 255;
-            visible: 0;
+            rel1.to: "hud_bar";
+            rel1.relative: 0 1;
+            color_class: "result";
             text {
                font: "nines";
-               size: 20;
-               text: "type result";
+               size: 60;
+               text: "|";
             }
          }
          description { state: "visible" 0.0;
             inherit: "default" 0.0;
-            visible: 1;
+         }
+         description { state: "correct" 0.0;
+            inherit: "default" 0.0;
+            text.size: 240;
+            }
+         description { state: "wrong" 0.0;
+            inherit: "default" 0.0;
          }
       }
 
       program { name: "result_box_hide";
          action: STATE_SET "default" 0.0;
-         signal: "result_box_hide";
-         target: "result_box";
          target: "result_text";
+         target: "result_clip";
       }
 
       part { name: "hi-score";
@@ -459,6 +468,7 @@ group { name: "game";
             target: "sky";
             target: "clo";
             target: "result_text";
+            target: "result_clip";
             target: "hud_bar";
             target: "operation_plus";
             target: "operation_minus";
@@ -471,8 +481,39 @@ group { name: "game";
        }
        program { name: "show_result_text_and_box";
            action: STATE_SET "visible" 0.0;
-           target: "result_box";
            target: "result_text";
+           target: "result_clip";
+           transition: ACCELERATE 0.3;
+           after: "hide_result_text_and_box";
+        }
+       program { name: "hide_result_text_and_box";
+           action: STATE_SET "default" 0.0;
+           target: "result_text";
+           target: "result_clip";
+           transition: ACCELERATE 0.3;
+           after: "show_result_text_and_box";
+        }
+       program { name: "stop_blink";
+           signal: "result_stop_blinking";
+           action: STATE_SET "visible" 0.0;
+           target: "result_text";
+           target: "result_clip";
+        }
+       program { name: "result_correct";
+           signal: "result_correct";
+           action: STATE_SET "correct" 0.0;
+           target: "result_text";
+           target: "result_clip";
+           transition: ACCELERATE 0.2;
+           after: "result_box_hide";
+        }
+       program { name: "result_wrong";
+           signal: "result_wrong";
+           action: STATE_SET "wrong" 0.0;
+           target: "result_text";
+           target: "result_clip";
+           transition: ACCELERATE 0.2;
+           after: "result_box_hide";
         }
    }
 }
