@@ -95,6 +95,37 @@ group { name: "game";
          }
       }
 
+      part { name: "numbers_area_bg";
+         type: RECT;
+         description { state: "default" 0.0;
+            color: 255 255 255 64;
+            rel1 {
+               to: "hud_bar";
+               relative: 0.0 1.0;
+               offset: 20 50;
+            }
+            rel2 {
+               relative: 1.0 1.0;
+               offset: -21 -100;
+            }
+         }
+      }
+
+      part { name: "numbers_area";
+         type: SWALLOW;
+         description { state: "default" 0.0;
+            rel1 {
+               to: "hud_bar";
+               relative: 0.0 1.0;
+               offset: 20 50;
+            }
+            rel2 {
+               relative: 1.0 1.0;
+               offset: -21 -100;
+            }
+         }
+      }
+
       part { name: "hi-score";
          type: TEXT;
          effect: OUTLINE_SOFT_SHADOW;
