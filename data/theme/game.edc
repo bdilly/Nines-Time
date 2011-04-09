@@ -91,6 +91,7 @@ group { name: "game";
       image: "sky1.png" COMP;
       image: "sky2.png" COMP;
       image: "top-bar.png" COMP;
+      image: "clo.png" COMP;
    }
 
    parts {
@@ -175,6 +176,53 @@ group { name: "game";
             after: "sky_day";
         }
     }
+         part { name: "clo";
+            mouse_events: 0;
+            description { state: "default" 0.0;
+                  min: 1330 480;
+                  max: 1330 480;
+               fill {
+                  smooth: 0;
+                  origin {
+                     relative: 0.0 0.0;
+                     offset: 0 0;
+                  }
+                  size {
+                     relative: 1.84722 1.0;
+                     offset: 0 0;
+                  }
+               }
+               image.normal: "clo.png";
+            }
+            description { state: "drift" 0.0;
+               inherit: "default" 0.0;
+               fill {
+                  origin {
+                     relative: 1.84722 0.0;
+                     offset: 0 0;
+                  }
+                  size {
+                     relative: 1.84722 1.0;
+                     offset: 0 0;
+                  }
+               }
+            }
+         }
+      programs {
+         program { name: "anim1";
+            signal: "load";
+            source: "";
+            action: STATE_SET "drift" 0.0;
+            transition: LINEAR 60;
+            target: "clo";
+            after: "anim2";
+         }
+         program { name: "anim2";
+            action: STATE_SET "default" 0.0;
+            target: "clo";
+            after: "anim1";
+         }
+      }
 
       part { name: "hud_bar_shadow";
          type: RECT;
