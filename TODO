@@ -1,4 +1,4 @@
-show operation on numbers copulation
-animate operations symbols on input (increase size and alpha)
 implement score
+improve cooldown system (it should have more cooldown time to +,
+ then, -, and then * /)
 BUG: it reached day 10 and the game continued
