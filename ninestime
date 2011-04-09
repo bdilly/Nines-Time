@@ -290,7 +290,7 @@ class GameScreen(Screen):
         self.show()
 
     def on_key_down(self, obj, event):
-        kn = event.keyname
+        kn = event.key
         if kn == "Escape":
             self.ee.data.pop("timer").delete()
             print "should delete randomgen"
@@ -299,11 +299,11 @@ class GameScreen(Screen):
             self.numbers_area.clear()
             self.hide()
             Hooks.fire("show_menu")
-        elif kn in ["equal", "KP_Add"]:
+        elif kn in ["plus", "KP_Add"]:
             self.ee.data["player"].plus.fire()
         elif kn in ["minus", "KP_Subtract"]:
             self.ee.data["player"].minus.fire()
-        elif kn in ["8", "KP_Multiply"]:
+        elif kn in ["asterisk", "KP_Multiply"]:
             self.ee.data["player"].times.fire()
         elif kn in ["slash", "KP_Divide"]:
             self.ee.data["player"].over.fire()
