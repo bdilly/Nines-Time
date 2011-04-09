@@ -61,6 +61,10 @@ class Operation:
             self.result += kn
             self.game.part_text_set("result_text", self.result)
             self.game.signal_emit("result_stop_blinking", "")
+        elif kn == "Delete":
+            self.result = "";
+            self.game.part_text_set("result_text", "|")
+            self.game.signal_emit("result_start_blinking", "")
         elif kn == "Escape" or kn == "Return":
             self.game.on_key_down_del(self.input_text)
             result = int(self.result)
