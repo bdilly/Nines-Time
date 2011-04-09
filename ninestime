@@ -396,7 +396,7 @@ class NumbersArea(ClippedSmartObject):
 
     @staticmethod
     def size_function(y):
-        return 52.92455 * log(y) - 281.97178
+        return 67.503 * log(y) - 362.115
 
     @staticmethod
     def walk_function(y):
@@ -406,7 +406,7 @@ class NumbersArea(ClippedSmartObject):
         pos_y = self.pos[1] + 100 + pos * (self.size[1] - 100 - vn.size[1]) / self.max_run
         pos_x = NumbersArea.walk_function(pos_y)
         wid = hei = NumbersArea.size_function(pos_y)
-        vn.move(pos_x, pos_y)
+        vn.move(pos_x, pos_y + 45)
         vn.resize(wid, hei)
 
     def expire_number(self, vn):
