@@ -363,9 +363,15 @@ class NumbersArea(ClippedSmartObject):
             return
 
     def clear(self):
+        for vn in self.numbers:
+            vn[0].delete()
         self.numbers = []
-        self.n1 = None
-        self.n2 = None
+        if self.n1:
+            self.n1.delete()
+            self.n1 = None
+        if self.n2:
+            self.n2.delete()
+            self.n2 = None
         self.op = None
         self._anim_stop()
         self.anim = None
