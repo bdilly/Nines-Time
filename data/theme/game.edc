@@ -1,3 +1,45 @@
+#define ADD_OPERATION(_name) \
+    part { name: "operation_"_name; \
+        description { state: "default" 0.0; \
+            min: 30 30; \
+            max: 30 30; \
+            rel1.to: "result_box"; \
+            rel2.to: "result_box"; \
+            color: 255 255 255 0; \
+            image.normal: _name"_full.png"; \
+        } \
+        description { state: "visible" 0.0; \
+            inherit: "default" 0.0; \
+            color: 255 255 255 255; \
+        } \
+        description { state: "big" 0.0; \
+            inherit: "default" 0.0; \
+            color: 255 255 255 0; \
+            min: 600 600; \
+            max: 600 600; \
+        } \
+    } \
+    program { name: _name"_operation_show"; \
+        signal: _name; \
+        action: STATE_SET "visible" 0.0; \
+        target: "operation_"_name; \
+        after: _name"_operation_enlarge"; \
+    } \
+    program { name: _name"_operation_enlarge"; \
+        action: STATE_SET "big" 0.0; \
+        target: "operation_"_name; \
+        transition: ACCELERATE 0.5; \
+        after: _name"_hide_op"; \
+    } \
+    program { name: _name"_hide_op"; \
+        action: STATE_SET "default" 0.0; \
+        target: "operation_"_name; \
+    } \
+    program { name: _name"_result_box"; \
+        signal: _name; \
+        after: "show_result_text_and_box"; \
+    }
+
 #define ADD_BUTTON(_pos, _name) \
 part { name: _name"_bg"; \
    type: RECT; \
@@ -65,12 +107,6 @@ program { name: _name"_hi_off"; \
    action: STATE_SET "default" 0.0; \
    target: _name"_hi"; \
    transition: ACCELERATE 0.3; \
-} \
-program { name: _name"_operation_chosen_set"; \
-   signal: _name; \
-   action: STATE_SET _name 0.0; \
-   target: "operation_chosen"; \
-   after: "show_result_text_and_box"; \
 }
 
 group { name: "game";
@@ -297,34 +333,10 @@ group { name: "game";
          }
       }
 
-      part { name: "operation_chosen";
-         description { state: "default" 0.0;
-            rel1.to: "result_box";
-            rel2.to: "result_box";
-            visible: 0;
-            image.normal: "over_full.png";
-         }
-         description { state: "plus" 0.0;
-            inherit: "default" 0.0;
-            image.normal: "plus_full.png";
-            visible: 1;
-         }
-         description { state: "minus" 0.0;
-            inherit: "default" 0.0;
-            image.normal: "minus_full.png";
-            visible: 1;
-         }
-         description { state: "times" 0.0;
-            inherit: "default" 0.0;
-            image.normal: "times_full.png";
-            visible: 1;
-         }
-         description { state: "over" 0.0;
-            inherit: "default" 0.0;
-            image.normal: "over_full.png";
-            visible: 1;
-         }
-      }
+        ADD_OPERATION("minus")
+        ADD_OPERATION("plus")
+        ADD_OPERATION("times")
+        ADD_OPERATION("over")
 
       part { name: "result_text";
          type: TEXT;
@@ -348,7 +360,6 @@ group { name: "game";
       program { name: "result_box_hide";
          action: STATE_SET "default" 0.0;
          signal: "result_box_hide";
-         target: "operation_chosen";
          target: "result_box";
          target: "result_text";
       }
@@ -448,8 +459,11 @@ group { name: "game";
             target: "sky";
             target: "clo";
             target: "result_text";
-            target: "operation_chosen";
             target: "hud_bar";
+            target: "operation_plus";
+            target: "operation_minus";
+            target: "operation_times";
+            target: "operation_over";
             after: "start_sig";
        }
        program { name: "start_sig";
