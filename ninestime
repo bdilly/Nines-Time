@@ -16,6 +16,7 @@ from functools import partial
 from time import strftime, gmtime
 from emotion import Emotion
 from random import Random
+from math import log
 
 DATA_DIR = abspath("./data")
 THEME = join(DATA_DIR, "theme", "default.edj")
@@ -393,10 +394,20 @@ class NumbersArea(ClippedSmartObject):
         self.n2.move(self.pos[0] + 200, self.pos[1])
         self.op.op_set(op)
 
+    @staticmethod
+    def size_function(y):
+        return 52.92455 * log(y) - 281.97178
+
+    @staticmethod
+    def walk_function(y):
+        return 15.1659554629 * log(y) + 19.9185536599
+
     def move_number(self, vn, pos):
-        pos_x = self.pos[0] + self.size[0] / 2 - vn.size[0] / 2
         pos_y = self.pos[1] + 100 + pos * (self.size[1] - 100 - vn.size[1]) / self.max_run
+        pos_x = NumbersArea.walk_function(pos_y)
+        wid = hei = NumbersArea.size_function(pos_y)
         vn.move(pos_x, pos_y)
+        vn.resize(wid, hei)
 
     def expire_number(self, vn):
         print "number", vn, "has reached its end. Apply penality!"
