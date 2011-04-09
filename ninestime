@@ -25,6 +25,7 @@ GAME_MUSIC = "annabloom_-_Percussion_Loops_1a_(5_4).mp3"
 OPS_SOUND = "111872__candlegravity__tweak_scratch_2.wav"
 RIGHT_SOUND = "111877__candlegravity__zipper_1.wav"
 WRONG_SOUND = "111873__candlegravity__tweat_down_1.wav"
+GAME_START_SOUND = "Strong_Punch-Mike_Koenig-574430706.wav"
 
 
 class Operation:
@@ -572,6 +573,7 @@ class MenuScreen(Screen):
         if kn  == "Escape":
             main_loop_quit()
         elif kn == "Return":
+            Hooks.fire("sound", GAME_START_SOUND)
             self.hide()
             Hooks.fire("start_game")
 
