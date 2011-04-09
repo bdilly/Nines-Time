@@ -232,38 +232,37 @@ class LoseScreen(Screen):
             Hooks.fire("show_menu")
 
 class VisualNumber(ClippedSmartObject):
-    numw = 50
-    numh = 50
 
     def __init__(self, canvas, number):
         ClippedSmartObject.__init__(self, canvas)
 
         self.img1 = FilledImage(canvas)
         self.member_add(self.img1)
-        self.img1.resize(self.numw, self.numh)
         self.img1.show()
         d1 = number % 10;
         self.img1.file_set("data/theme/images/" + str(d1) + ".png")
-        self.img1.move(self.pos[0] + self.numw, self.pos[1])
 
         if number >= 10:
             self.img2 = FilledImage(canvas)
             self.member_add(self.img2)
-            self.img2.resize(self.numw, self.numh)
             self.img2.show()
             d2 = number / 10;
             self.img2.file_set("data/theme/images/" + str(d2) + ".png")
-            self.img2.move(self.pos[0], self.pos[1])
         self.number = number
 
     def __str__(self):
         return str(self.number)
 
-    def size(self):
-        return (self.numw * 2, self.numh)
-
     def number(self):
         return self.number
+
+    def resize(self, w, h):
+        self.img1.resize(w / 2, h)
+        self.img1.move(self.pos[0] + w / 2, self.pos[1])
+
+        if self.number >= 10:
+            self.img2.resize(w / 2, h)
+            self.img2.move(self.pos[0], self.pos[1])
 
 
 class VisualOperation(ClippedSmartObject):
@@ -370,6 +369,7 @@ class NumbersArea(ClippedSmartObject):
             mystr = str(self.n1) + ' ' + str(self.op) + ' ' + str(self.n2)
             number = eval(mystr)
             visual_number = VisualNumber(self.evas, number)
+            visual_number.resize(100, 50)
             visual_number.show()
             self.member_add(visual_number)
             self.numbers.append((visual_number, 0))
@@ -378,9 +378,11 @@ class NumbersArea(ClippedSmartObject):
             self.n2.delete()
 
         self.n1 = VisualNumber(self.evas, pair[0])
+        self.n1.resize(100, 50)
         self.n1.show()
         self.member_add(self.n1)
         self.n2 = VisualNumber(self.evas, pair[1])
+        self.n2.resize(100, 50)
         self.n2.show()
         self.member_add(self.n2)
         self.n1.move(self.pos[0] + 20, self.pos[1])
@@ -388,8 +390,8 @@ class NumbersArea(ClippedSmartObject):
         self.op.op_set(op)
 
     def move_number(self, vn, pos):
-        pos_x = self.pos[0] + self.size[0] / 2 - vn.size()[0] / 2
-        pos_y = self.pos[1] + 100 + pos * (self.size[1] - 100 - vn.size()[1]) / self.max_run
+        pos_x = self.pos[0] + self.size[0] / 2 - vn.size[0] / 2
+        pos_y = self.pos[1] + 100 + pos * (self.size[1] - 100 - vn.size[1]) / self.max_run
         vn.move(pos_x, pos_y)
 
     def expire_number(self, vn):
