@@ -75,7 +75,6 @@ class Operation:
         Hooks.fire("sound", OPS_SOUND)
         self.cooldown = 100
         self.timer = timer_add(0.1, self.decrease_cooldown)
-        self.game.signal_emit(self.signal, "")
         drag = self.cooldown / 100.
         self.game.part_drag_value_set(self.signal + "_block", 0, drag)
         self.game.on_key_down_add(self.input_text)
