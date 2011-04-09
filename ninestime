@@ -360,7 +360,6 @@ def sweet_emotion(ee):
     Hooks.add("sound", play, sound_player)
 
 def game_main():
-    # FIXME get it from a file so user don't need to change it every time
     screen_size = (400, 600)
     ee = SoftwareX11(w=screen_size[0], h=screen_size[1])
 
@@ -371,9 +370,9 @@ def game_main():
 
     ee.data["bg"] = bg
     ee.data["score"] = 0
-    # FIXME get it from a file
     ee.data["hi-score"] = 0
     ee.size_min_set(*screen_size)
+    ee.size_max_set(*screen_size)
     ee.callback_resize = resize_cb
     ee.title = "Nines Time"
 
