@@ -452,9 +452,11 @@ class NumbersArea(ClippedSmartObject):
         r = eval(str(n1) + ' ' + op + ' ' + str(n2))
         if r != result:
             self.ee.data["game"].signal_emit("result_wrong", "")
+            Hooks.fire("sound", WRONG_SOUND)
             print "wrong result! correct one should be", r
         else:
             self.ee.data["game"].signal_emit("result_correct", "")
+            Hooks.fire("sound", RIGHT_SOUND)
             self.speed_inc()
             print "result correct!", r
             Hooks.fire("scoreinc")
