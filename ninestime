@@ -489,7 +489,6 @@ class GameScreen(Screen):
         Hooks.add("scoreslowdown", self.score_slowdown)
 
     def _tock(self):
-        self.ee.data["time"] = self.ee.data["time"] - 1
         day = ((540 - self.ee.data["time"]) / 60) + 1
         self.ee.data["game"].part_text_set("time", "Day " + str(day))
         if (self.ee.data["time"] < 1):
