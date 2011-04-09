@@ -212,7 +212,7 @@ class WinScreen(Screen):
         self.give_focus()
         self.show()
 
-    def on_key_donw(self, obj, event):
+    def on_key_down(self, obj, event):
         kn = event.keyname
         if kn == "Escape":
             self.hide()
