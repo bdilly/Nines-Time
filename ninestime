@@ -10,7 +10,7 @@ from ecore.evas import SoftwareX11
 from ecore import main_loop_begin, main_loop_quit, animator_frametime_set, \
         timer_add, animator_add
 from edje import Edje
-from evas import ClippedSmartObject, Rectangle
+from evas import ClippedSmartObject, Rectangle, FilledImage
 from collections import defaultdict
 from functools import partial
 from time import strftime, gmtime
@@ -217,26 +217,36 @@ class LoseScreen(Screen):
             self.hide()
             Hooks.fire("show_menu")
 
-class VisualNumber:
-    def __init__(self, canvas, number):
-        color = (255, number * 20, 0, 255)
-        self.img = Rectangle(canvas)
-        self.img.resize(50, 50)
-        self.img.color_set(*color)
-        self.img.show()
-        self.number = number
+class VisualNumber(ClippedSmartObject):
+    numw = 50
+    numh = 50
 
-    def __del__(self):
-        self.img.delete()
+    def __init__(self, canvas, number):
+        ClippedSmartObject.__init__(self, canvas)
+
+        self.img1 = FilledImage(canvas)
+        self.member_add(self.img1)
+        self.img1.resize(self.numw, self.numh)
+        self.img1.show()
+        d1 = number % 10;
+        self.img1.file_set("data/theme/images/" + str(d1) + ".png")
+        self.img1.move(self.pos[0] + self.numw, self.pos[1])
+
+        if number >= 10:
+            self.img2 = FilledImage(canvas)
+            self.member_add(self.img2)
+            self.img2.resize(self.numw, self.numh)
+            self.img2.show()
+            d2 = number / 10;
+            self.img2.file_set("data/theme/images/" + str(d2) + ".png")
+            self.img2.move(self.pos[0], self.pos[1])
+        self.number = number
 
     def __str__(self):
         return str(self.number)
 
-    def move(self, x, y):
-        self.img.move(x, y)
-
     def size(self):
-        return self.img.size
+        return (self.numw * 2, self.numh)
 
     def number(self):
         return self.number
@@ -273,8 +283,9 @@ class NumbersArea(ClippedSmartObject):
             self.numbers[i] = vn
             if vn[1] > self.max_run:
                 self.expire_number(vn[0])
-                self.numbers.pop(i)
-            self.move_number(vn[0], vn[1])
+                self.numbers.pop(i)[0].delete()
+            else:
+                self.move_number(vn[0], vn[1])
         return True
 
     def _anim_start(self):
@@ -293,14 +304,19 @@ class NumbersArea(ClippedSmartObject):
             mystr = str(self.n1) + ' ' + self.op + ' ' + str(self.n2)
             number = eval(mystr)
             visual_number = VisualNumber(self.evas, number)
-            self.member_add(visual_number.img)
+            visual_number.show()
+            self.member_add(visual_number)
             self.numbers.append((visual_number, 0))
             self.move_number(visual_number, 0)
+            self.n1.delete()
+            self.n2.delete()
 
         self.n1 = VisualNumber(self.evas, pair[0])
-        self.member_add(self.n1.img)
+        self.n1.show()
+        self.member_add(self.n1)
         self.n2 = VisualNumber(self.evas, pair[1])
-        self.member_add(self.n2.img)
+        self.n2.show()
+        self.member_add(self.n2)
         self.n1.move(self.pos[0] + 20, self.pos[1])
         self.n2.move(self.pos[0] + 200, self.pos[1])
         self.op = op
@@ -322,6 +338,8 @@ class NumbersArea(ClippedSmartObject):
             print "wrong result! correct one should be", r
         else:
             print "result correct!", r
+        n1.delete()
+        n2.delete()
 
     def check_operation(self, op):
         if len(self.numbers) < 2:
