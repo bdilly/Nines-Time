@@ -26,12 +26,14 @@ class Operation:
         self.signal = signal
         self.game = game
         self.cooldown = 0
-        self.game.part_drag_value_set(self.signal + "_block", 0, 1)
+        self.game.part_drag_value_set(self.signal + "_block", 0, 0)
 
     def decrease_cooldown(self):
         self.cooldown = self.cooldown - 20
-        drag = 1 - self.cooldown / 100.
+        drag = self.cooldown / 100.
         self.game.part_drag_value_set(self.signal + "_block", 0, drag)
+        if not drag:
+            self.game.signal_emit(self.signal + "_hi", "")
         return self.cooldown
 
     def fire(self):
@@ -42,7 +44,7 @@ class Operation:
         self.cooldown = 100
         timer_add(0.5, self.decrease_cooldown)
         self.game.signal_emit(self.signal, "")
-        drag = 1 - self.cooldown / 100.
+        drag = self.cooldown / 100.
         self.game.part_drag_value_set(self.signal + "_block", 0, drag)
 
 

@@ -34,14 +34,37 @@ part { name: _name"_block"; \
 part { name: _name"_shadow"; \
    type: RECT; \
    description { state: "default" 0.0; \
-      rel1 { \
+      rel1.to: _name"_bg"; \
+      rel2 { \
         to_x: _name"_bg"; \
         to_y: _name"_block"; \
       } \
-      rel2.to: _name"_bg"; \
       color: 0 0 0 192; \
    } \
 } \
+part { name: _name"_hi"; \
+   type: RECT; \
+   description { state: "default" 0.0; \
+      rel1.to: _name"_bg"; \
+      rel2.to: _name"_bg"; \
+      color: 255 255 255 0; \
+   } \
+   description { state: "visible" 0.0; \
+      inherit: "default" 0.0; \
+      color: 255 255 255 180; \
+   } \
+} \
+program { name: _name"_hi_on"; \
+   signal: _name"_hi"; \
+   action: STATE_SET "visible" 0.0; \
+   target: _name"_hi"; \
+   after: _name"_hi_off"; \
+} \
+program { name: _name"_hi_off"; \
+   action: STATE_SET "default" 0.0; \
+   target: _name"_hi"; \
+   transition: ACCELERATE 0.3; \
+}
 
 
 group { name: "game";
