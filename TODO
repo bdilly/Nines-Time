@@ -3,3 +3,4 @@ delete dead numbers on the canvas
 show operation on numbers copulation
 animate operations symbols on input (increase size and alpha)
 implement score
+BUG: it reached day 10 and the game continued
