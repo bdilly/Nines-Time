@@ -266,6 +266,54 @@ class VisualNumber(ClippedSmartObject):
         return self.number
 
 
+class VisualOperation(ClippedSmartObject):
+
+    op_file = {
+        '+': 'plus_bt.png',
+        '-': 'minus_bt.png',
+        '*': 'times_bt.png',
+        '/': 'over_bt.png',
+    }
+
+    def __init__(self, canvas, op):
+        ClippedSmartObject.__init__(self, canvas)
+
+        self.img = FilledImage(canvas)
+        self.member_add(self.img)
+        self.op = op
+
+        self._select_image()
+
+    def _select_image(self):
+        if self.op is None or not (self.op in self.op_file.keys()):
+            self.img.hide()
+            return
+
+        imgpath = 'data/theme/images/'
+        imgfile = imgpath + self.op_file[self.op]
+        self.img.file_set(imgfile)
+        self.img.show()
+
+    def op_set(self, op):
+        self.op = op
+        self._select_image()
+
+    def op_get(self):
+        return self.op
+
+    def __str__(self):
+        return str(self.op)
+
+    def __eq__(self, other):
+        return self.op == other
+
+    def __ne__(self, other):
+        return self.op != other
+
+    def resize(self, w, h):
+        self.img.resize(w, h)
+
+
 class NumbersArea(ClippedSmartObject):
     """
     Numbers will run from 0 to 1000.
@@ -287,7 +335,11 @@ class NumbersArea(ClippedSmartObject):
         self.numbers = [] # list of tuples (visual number, position [0-100])
         self.n1 = None
         self.n2 = None
-        self.op = None
+        self.op = VisualOperation(canvas, None)
+        self.member_add(self.op)
+        self.op.resize(50, 50)
+        self.op.move(self.pos[0] + 150, self.pos[1])
+        self.op.show()
         self.anim = None
         self.speed = self.min_speed
 
@@ -315,7 +367,7 @@ class NumbersArea(ClippedSmartObject):
         self._anim_start()
 
         if self.n1 != None and self.n2 != None and self.op != None:
-            mystr = str(self.n1) + ' ' + self.op + ' ' + str(self.n2)
+            mystr = str(self.n1) + ' ' + str(self.op) + ' ' + str(self.n2)
             number = eval(mystr)
             visual_number = VisualNumber(self.evas, number)
             visual_number.show()
@@ -333,7 +385,7 @@ class NumbersArea(ClippedSmartObject):
         self.member_add(self.n2)
         self.n1.move(self.pos[0] + 20, self.pos[1])
         self.n2.move(self.pos[0] + 200, self.pos[1])
-        self.op = op
+        self.op.op_set(op)
 
     def move_number(self, vn, pos):
         pos_x = self.pos[0] + self.size[0] / 2 - vn.size()[0] / 2
@@ -371,7 +423,7 @@ class NumbersArea(ClippedSmartObject):
         if self.n2:
             self.n2.delete()
             self.n2 = None
-        self.op = None
+        self.op.op_set(None)
         self._anim_stop()
         self.anim = None
 
@@ -404,7 +456,6 @@ class GameScreen(Screen):
         return True
 
     def _gen_cb(self, pair, op):
-        print "pair =", pair, ", op =", op
         self.numbers_area.add_tuple(pair, op)
 
     def on_show(self):
