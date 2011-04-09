@@ -76,6 +76,9 @@ group { name: "game";
       image: "minus_bt.png" COMP;
       image: "times_bt.png" COMP;
       image: "over_bt.png" COMP;
+      image: "sky0.png" COMP;
+      image: "sky1.png" COMP;
+      image: "sky2.png" COMP;
    }
 
    parts {
@@ -85,6 +88,81 @@ group { name: "game";
             image.normal: "background.png";
          }
       }
+
+      part { name: "background_light";
+         type: RECT;
+         description { state: "default" 0.0;
+            color: 255 170 10 90;
+         }
+         description { state: "night" 0.0;
+            color: 255 255 255 0;
+         }
+      }
+
+    programs {
+        program { name: "sunset";
+            signal: "load";
+            action: STATE_SET "night" 0.0;
+            target: "background_light";
+            transition: ACCELERATE 10;
+            after: "sunrise";
+        }
+        program { name: "sunrise";
+            action: STATE_SET "default" 0.0;
+            target: "background_light";
+            transition: ACCELERATE 10;
+            after: "sunset";
+        }
+    }
+
+      part { name: "sky";
+         description { state: "default" 0.0;
+            min: 400 278;
+            max: 400 278;
+            align: 0 0;
+            image.normal: "sky0.png";
+         }
+         description { state: "low" 0.0;
+            inherit: "default" 0.0;
+            image.normal: "sky2.png";
+         }
+         description { state: "night" 0.0;
+            inherit: "default" 0.0;
+            image.normal: "sky1.png";
+         }
+         description { state: "up" 0.0;
+            inherit: "default" 0.0;
+            image.normal: "sky2.png";
+         }
+      }
+
+    programs {
+        program { name: "sky_day";
+            signal: "load";
+            action: STATE_SET "low" 0.0;
+            target: "sky";
+            in: 5 0;
+            after: "sky_low";
+        }
+        program { name: "sky_low";
+            action: STATE_SET "night" 0.0;
+            target: "sky";
+            in: 5 0;
+            after: "sky_night";
+        }
+        program { name: "sky_night";
+            action: STATE_SET "down" 0.0;
+            target: "sky";
+            in: 5 0;
+            after: "sky_up";
+        }
+        program { name: "sky_up";
+            action: STATE_SET "default" 0.0;
+            target: "sky";
+            in: 5 0;
+            after: "sky_day";
+        }
+    }
 
       part { name: "hud_bar";
          type: RECT;
