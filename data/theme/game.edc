@@ -116,13 +116,13 @@ group { name: "game";
             signal: "load";
             action: STATE_SET "night" 0.0;
             target: "background_light";
-            transition: ACCELERATE 10;
+            transition: ACCELERATE 30;
             after: "sunrise";
         }
         program { name: "sunrise";
             action: STATE_SET "default" 0.0;
             target: "background_light";
-            transition: ACCELERATE 10;
+            transition: ACCELERATE 30;
             after: "sunset";
         }
     }
@@ -153,25 +153,25 @@ group { name: "game";
             signal: "load";
             action: STATE_SET "low" 0.0;
             target: "sky";
-            in: 5 0;
+            in: 15 0;
             after: "sky_low";
         }
         program { name: "sky_low";
             action: STATE_SET "night" 0.0;
             target: "sky";
-            in: 5 0;
+            in: 15 0;
             after: "sky_night";
         }
         program { name: "sky_night";
             action: STATE_SET "down" 0.0;
             target: "sky";
-            in: 5 0;
+            in: 15 0;
             after: "sky_up";
         }
         program { name: "sky_up";
             action: STATE_SET "default" 0.0;
             target: "sky";
-            in: 5 0;
+            in: 15 0;
             after: "sky_day";
         }
     }
