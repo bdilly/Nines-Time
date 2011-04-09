@@ -8,7 +8,7 @@
 from os.path import abspath, join
 from ecore.evas import SoftwareX11
 from ecore import main_loop_begin, main_loop_quit, animator_frametime_set, \
-        timer_add
+        timer_add, animator_add
 from edje import Edje
 from evas import ClippedSmartObject, Rectangle
 from collections import defaultdict
@@ -242,35 +242,68 @@ class VisualNumber:
 
 
 class NumbersArea(ClippedSmartObject):
+    """
+    Numbers will run from 0 to 100 (% of their "road").
+
+    Each tick of the clock will move them by 1, multiplied by a number of
+    pixels plus/times a speed (difficulty).
+    """
     def __init__(self, canvas):
         ClippedSmartObject.__init__(self, canvas)
-        self.numbers = []
+        self.numbers = [] # list of tuples (visual number, position [0-100])
         self.n1 = None
         self.n2 = None
         self.op = None
+        self.anim = None
 
-    def add(self, number):
-        self.numbers.append(VisualNumber(self.evas, number))
+    # def add(self, number):
+    #     self.numbers.append(VisualNumber(self.evas, number))
+
+    def _anim_cb(self):
+        for i, vn in enumerate(self.numbers):
+            vn = (vn[0], vn[1] + 1)
+            self.numbers[i] = vn
+            self.move_number(vn[0], vn[1])
+        return True
+
+    def _anim_start(self):
+        if not self.anim:
+            self.anim = animator_add(self._anim_cb)
+
+    def _anim_stop(self):
+        if self.anim:
+            self.anim.delete()
+            self.anim = None
 
     def add_tuple(self, pair, op):
+        self._anim_start()
+
         if self.n1 != None and self.n2 != None and self.op != None:
             mystr = str(self.n1) + ' ' + self.op + ' ' + str(self.n2)
             number = eval(mystr)
             visual_number = VisualNumber(self.evas, number)
-            pos_x = self.pos[0] + self.size[0] / 2 - visual_number.size()[0] / 2
-            pos_y = self.pos[1] + 50
-            visual_number.move(pos_x, pos_y)
-            self.numbers.append(visual_number)
+            self.numbers.append((visual_number, 0))
+            self.move_number(visual_number, 0)
 
         self.n1 = VisualNumber(self.evas, pair[0])
         self.n2 = VisualNumber(self.evas, pair[1])
+        self.n1.move(self.pos[0] + 20, self.pos[1])
+        self.n2.move(self.pos[0] + 200, self.pos[1])
         self.op = op
+
+    def move_number(self, vn, pos):
+        pos_x = self.pos[0] + self.size[0] / 2 - vn.size()[0] / 2
+        pos_y = self.pos[1] + 100 + pos * (self.size[1] - 100 - vn.size()[1]) / 100
+        print "move number to pos:", pos, (pos_x, pos_y)
+        vn.move(pos_x, pos_y)
 
     def clear(self):
         self.numbers = []
         self.n1 = None
         self.n2 = None
         self.op = None
+        self._anim_stop()
+        self.anim = None
 
     def resize(self, w, h):
         print "resized to:", (w, h)
