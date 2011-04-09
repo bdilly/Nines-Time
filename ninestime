@@ -78,103 +78,123 @@ def resize_cb(ee):
     for d in ["bg", "menu", "game", "win", "lose"]:
         ee.data[d].size = ee.evas.size
 
-def win_screen(ee):
-    def _on_show():
-        win.focus = True
-        win.show()
+class Screen:
+    def __init__(self, ee, name, on_show_hook_name=None):
+        self.ee = ee
+        self.screen = Edje(ee.evas, file=THEME, group=name)
+        self.screen.size = ee.evas.size
+        ee.data[name] = self.screen
+        if on_show_hook_name:
+            add_hook(on_show_hook_name, self.on_show)
+        else:
+            add_hook(name, self.on_show)
+        self.screen.on_key_down_add(self.on_key_down)
 
-    def _on_key_down(obj, event):
+        self.give_focus()
+
+    def on_show(self):
+        pass
+
+    def on_key_down(self):
+        pass
+
+    def hide(self):
+        self.lose_focus()
+        self.screen.hide()
+
+    def show(self):
+        self.screen.show()
+        self.give_focus()
+
+    def give_focus(self):
+        self.screen.focus = True
+
+    def lose_focus(self):
+        self.screen.focus = False
+
+class WinScreen(Screen):
+    def __init__(self, ee):
+        Screen.__init__(self, ee, "win")
+
+    def on_show(self):
+        self.give_focus()
+        self.show()
+
+    def on_key_donw(self, obj, event):
         kn = event.keyname
-        if kn  == "Escape":
-            win.hide()
+        if kn == "Escape":
+            self.hide()
             fire_hooks("show_menu")
 
-    win = Edje(ee.evas, file=THEME, group="win")
-    win.size = ee.evas.size
-    win.on_key_down_add(_on_key_down)
-    ee.data["win"] = win
-    add_hook("win", _on_show)
+class LoseScreen(Screen):
+    def __init__(self, ee):
+        Screen.__init__(self, ee, "lose")
 
-def lose_screen(ee):
-    def _on_show():
-        lose.focus = True
-        lose.show()
+    def on_show(self):
+        self.give_focus()
+        self.show()
 
-    def _on_key_down(obj, event):
+    def on_key_down(self, obj, event):
         kn = event.keyname
-        if kn  == "Escape":
-            lose.hide()
+        if kn == "Escape":
+            self.hide()
             fire_hooks("show_menu")
 
-    lose = Edje(ee.evas, file=THEME, group="lose")
-    lose.size = ee.evas.size
-    lose.on_key_down_add(_on_key_down)
-    ee.data["lose"] = lose
-    add_hook("lose", _on_show)
+class GameScreen(Screen):
+    def __init__(self, ee):
+        Screen.__init__(self, ee, "game", on_show_hook_name="start_game")
 
-def game_screen(ee):
-    def _tick(ee):
-        ee.data["time"] = ee.data["time"] - 1
-        time = strftime("%M:%S", gmtime(ee.data["time"]))
-        ee.data["game"].part_text_set("time", time)
-        if (ee.data["time"] < 1):
+    def _tick(self):
+        self.ee.data["time"] = self.ee.data["time"] - 1
+        time = strftime("%M:%S", gmtime(self.ee.data["time"]))
+        self.ee.data["game"].part_text_set("time", time)
+        if (self.ee.data["time"] < 1):
             game.hide()
             fire_hooks("win")
             return False
         return True
 
-    def _on_show(ee):
-        ee.data["game"].part_text_set("time", "09:00")
-        ee.data["time"] = 540
-        ee.data["timer"] = timer_add(1, _tick, ee)
+    def on_show(self):
+        self.ee.data["game"].part_text_set("time", "09:00")
+        self.ee.data["time"] = 540
+        self.ee.data["timer"] = timer_add(1, self._tick)
         fire_hooks("music", GAME_MUSIC)
-        ee.data["player"] = Player(ee)
-        game.focus = True
-        game.show()
+        self.ee.data["player"] = Player(self.ee)
+        self.give_focus()
+        self.show()
 
-    def _on_key_down(obj, event, ee):
+    def on_key_down(self, obj, event):
         kn = event.keyname
         if kn  == "Escape":
-            ee.data["timer"].delete()
-            game.hide()
+            self.ee.data["timer"].delete()
+            self.hide()
             fire_hooks("show_menu")
         elif kn  in ["equal", "KP_Add"]:
-            ee.data["player"].plus.fire()
+            self.ee.data["player"].plus.fire()
         elif kn  in ["minus", "KP_Subtract"]:
-            ee.data["player"].minus.fire()
+            self.ee.data["player"].minus.fire()
         elif kn  in ["8", "KP_Multiply"]:
-            ee.data["player"].times.fire()
+            self.ee.data["player"].times.fire()
         elif kn  in ["slash", "KP_Divide"]:
-            ee.data["player"].over.fire()
+            self.ee.data["player"].over.fire()
 
-    game = Edje(ee.evas, file=THEME, group="game")
-    game.size = ee.evas.size
-    game.on_key_down_add(_on_key_down, ee)
-    ee.data["game"] = game
-    add_hook("start_game", _on_show, ee)
-
-def menu_screen(ee):
-    def _on_show():
-        menu.focus = True
+class MenuScreen(Screen):
+    def __init__(self, ee):
+        Screen.__init__(self, ee, "menu", on_show_hook_name="show_menu")
         fire_hooks("music", MENU_MUSIC)
-        menu.show()
 
-    def _on_key_down(obj, event):
+    def on_show(self):
+        self.give_focus()
+        fire_hooks("music", MENU_MUSIC)
+        self.show()
+
+    def on_key_down(self, obj, event):
         kn = event.keyname
         if kn  == "Escape":
             main_loop_quit()
         elif kn == "Return":
-            menu.hide()
+            self.hide()
             fire_hooks("start_game")
-
-    menu = Edje(ee.evas, file=THEME, group="menu")
-    menu.size = ee.evas.size
-    menu.on_key_down_add(_on_key_down)
-    menu.focus = True
-    fire_hooks("music", MENU_MUSIC)
-    menu.show()
-    ee.data["menu"] = menu
-    add_hook("show_menu", _on_show)
 
 def sweet_emotion(ee):
     def play(player, source = ""):
@@ -211,10 +231,13 @@ def game_main():
     ee.title = "Nines Time"
 
     sweet_emotion(ee)
-    menu_screen(ee)
-    game_screen(ee)
-    win_screen(ee)
-    lose_screen(ee)
+
+    menu = MenuScreen(ee)
+    game = GameScreen(ee)
+    win = WinScreen(ee)
+    lose = LoseScreen(ee)
+
+    menu.show()
 
     # Sets the framerate of the game to 60FPS
     animator_frametime_set(1.0 / 60.0)
