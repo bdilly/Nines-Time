@@ -499,7 +499,7 @@ class GameScreen(Screen):
     def _tick(self):
         self.ee.data["time"] = self.ee.data["time"] - 1
         if (self.ee.data["time"] < 1):
-            game.hide()
+            self.hide()
             Hooks.fire("win")
             return False
         return True
