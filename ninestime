@@ -167,7 +167,7 @@ class RandomGen:
 
 
 def resize_cb(ee):
-    for d in ["bg", "menu", "game", "win", "lose"]:
+    for d in ["bg", "menu", "game", "win"]:
         ee.data[d].size = ee.evas.size
 
 class Screen:
@@ -218,19 +218,6 @@ class WinScreen(Screen):
             self.hide()
             Hooks.fire("show_menu")
 
-class LoseScreen(Screen):
-    def __init__(self, ee):
-        Screen.__init__(self, ee, "lose")
-
-    def on_show(self):
-        self.give_focus()
-        self.show()
-
-    def on_key_down(self, obj, event):
-        kn = event.keyname
-        if kn == "Escape":
-            self.hide()
-            Hooks.fire("show_menu")
 
 class VisualNumber(ClippedSmartObject):
 
@@ -624,7 +611,6 @@ def game_main():
     menu = MenuScreen(ee)
     game = GameScreen(ee)
     win = WinScreen(ee)
-    lose = LoseScreen(ee)
 
     menu.show()
 
