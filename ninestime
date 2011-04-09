@@ -50,12 +50,13 @@ class Operation:
         if kn in self.digits:
             self.result += kn
             self.game.part_text_set("result_text", self.result)
-        elif kn == "Return":
+        elif kn == "Escape" or kn == "Return":
+            self.game.on_key_down_del(self.input_text)
             self.game.signal_emit("result_box_hide", "")
             self.game.part_text_set("result_text", "type result")
-            print "Result = " + self.result
+            if kn == "Return":
+                print "Result = " + self.result
             self.result = ""
-            self.game.on_key_down_del(self.input_text)
 
     def fire(self):
         if self.cooldown:
