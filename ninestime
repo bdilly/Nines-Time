@@ -24,8 +24,6 @@ RIGHT_SOUND = "111877__candlegravity__zipper_1.wav"
 WRONG_SOUND = "111873__candlegravity__tweat_down_1.wav"
 
 
-hooks = defaultdict(list)
-
 class Operation:
     def __init__(self, game, signal):
         self.signal = signal
@@ -45,7 +43,7 @@ class Operation:
         if self.cooldown:
             return
         self.game.signal_emit(self.signal, "")
-        fire_hooks("sound", OPS_SOUND)
+        Hooks.fire("sound", OPS_SOUND)
         self.cooldown = 100
         timer_add(0.1, self.decrease_cooldown)
         self.game.signal_emit(self.signal, "")
@@ -67,12 +65,17 @@ class Player:
         self.score = self.score + delta
 
 
-def add_hook(kind, fn, *args, **kwargs):
-    hooks[kind].append(partial(fn, *args, **kwargs))
+class Hooks:
+    hooks = defaultdict(list)
 
-def fire_hooks(kind, *args, **kwargs):
-    for hook in hooks[kind]:
-        hook(*args, **kwargs)
+    @staticmethod
+    def add(kind, fn, *args, **kwargs):
+        Hooks.hooks[kind].append(partial(fn, *args, **kwargs))
+
+    @staticmethod
+    def fire(kind, *args, **kwargs):
+        for hook in Hooks.hooks[kind]:
+            hook(*args, **kwargs)
 
 def resize_cb(ee):
     for d in ["bg", "menu", "game", "win", "lose"]:
@@ -85,9 +88,9 @@ class Screen:
         self.screen.size = ee.evas.size
         ee.data[name] = self.screen
         if on_show_hook_name:
-            add_hook(on_show_hook_name, self.on_show)
+            Hooks.add(on_show_hook_name, self.on_show)
         else:
-            add_hook(name, self.on_show)
+            Hooks.add(name, self.on_show)
         self.screen.on_key_down_add(self.on_key_down)
 
         self.give_focus()
@@ -124,7 +127,7 @@ class WinScreen(Screen):
         kn = event.keyname
         if kn == "Escape":
             self.hide()
-            fire_hooks("show_menu")
+            Hooks.fire("show_menu")
 
 class LoseScreen(Screen):
     def __init__(self, ee):
@@ -138,7 +141,7 @@ class LoseScreen(Screen):
         kn = event.keyname
         if kn == "Escape":
             self.hide()
-            fire_hooks("show_menu")
+            Hooks.fire("show_menu")
 
 class GameScreen(Screen):
     def __init__(self, ee):
@@ -150,7 +153,7 @@ class GameScreen(Screen):
         self.ee.data["game"].part_text_set("time", time)
         if (self.ee.data["time"] < 1):
             game.hide()
-            fire_hooks("win")
+            Hooks.fire("win")
             return False
         return True
 
@@ -158,7 +161,7 @@ class GameScreen(Screen):
         self.ee.data["game"].part_text_set("time", "09:00")
         self.ee.data["time"] = 540
         self.ee.data["timer"] = timer_add(1, self._tick)
-        fire_hooks("music", GAME_MUSIC)
+        Hooks.fire("music", GAME_MUSIC)
         self.ee.data["player"] = Player(self.ee)
         self.give_focus()
         self.show()
@@ -168,7 +171,7 @@ class GameScreen(Screen):
         if kn == "Escape":
             self.ee.data["timer"].delete()
             self.hide()
-            fire_hooks("show_menu")
+            Hooks.fire("show_menu")
         elif kn in ["equal", "KP_Add"]:
             self.ee.data["player"].plus.fire()
         elif kn in ["minus", "KP_Subtract"]:
@@ -181,11 +184,11 @@ class GameScreen(Screen):
 class MenuScreen(Screen):
     def __init__(self, ee):
         Screen.__init__(self, ee, "menu", on_show_hook_name="show_menu")
-        fire_hooks("music", MENU_MUSIC)
+        Hooks.fire("music", MENU_MUSIC)
 
     def on_show(self):
         self.give_focus()
-        fire_hooks("music", MENU_MUSIC)
+        Hooks.fire("music", MENU_MUSIC)
         self.show()
 
     def on_key_down(self, obj, event):
@@ -194,7 +197,7 @@ class MenuScreen(Screen):
             main_loop_quit()
         elif kn == "Return":
             self.hide()
-            fire_hooks("start_game")
+            Hooks.fire("start_game")
 
 def sweet_emotion(ee):
     def play(player, source = ""):
@@ -209,8 +212,8 @@ def sweet_emotion(ee):
     music_player = Emotion(ee.evas, module_filename="gstreamer")
     music_player.on_playback_finished_add(play)
     sound_player = Emotion(ee.evas, module_filename="gstreamer")
-    add_hook("music", play, music_player)
-    add_hook("sound", play, sound_player)
+    Hooks.add("music", play, music_player)
+    Hooks.add("sound", play, sound_player)
 
 def game_main():
     # FIXME get it from a file so user don't need to change it every time
