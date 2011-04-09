@@ -295,7 +295,7 @@ group { name: "game";
       part { name: "numbers_area_bg";
          type: RECT;
          description { state: "default" 0.0;
-            color: 255 255 255 64;
+            color: 255 255 255 0;
             rel1 {
                to: "hud_bar";
                relative: 0.0 1.0;
