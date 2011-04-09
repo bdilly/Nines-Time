@@ -9,7 +9,7 @@ to get you.
 
 It's a game developed in python using bindings for EFL (Enlightnment Foundation
 Libraries), so to play it you'll need to install python-ecore, python-evas,
-and python-edje that can be get from "e" project repository:
+python-edje and python-emotion that can be get from "e" project repository:
 
   svn co http://svn.enlightenment.org/svn/e/trunk/BINDINGS/python/
 
