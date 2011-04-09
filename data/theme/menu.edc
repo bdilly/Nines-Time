@@ -7,33 +7,17 @@ group { name: "menu";
    parts {
 
       part { name: "background";
-         type: RECT;
          description { state: "default" 0.0;
-            color: 243 104 35 255;
-         }
-      }
-
-      part { name: "splashscreen_shadow";
-         type: RECT;
-         description { state: "default" 0.0;
-            rel1 {
-               to: "splashscreen";
-               offset: 2 2;
-            }
-            rel2 {
-               to: "splashscreen";
-               offset: 2 2;
-            }
-            color: 40 40 40 128;
+            image.normal: "splash.png";
          }
       }
 
       part { name: "splashscreen";
+         type: RECT;
          description { state: "default" 0.0;
-            aspect: 1 1;
-            image.normal: "splash.png";
             rel1.relative: 0.1 0.1;
             rel2.relative: 0.9 0.7;
+            color: 255 255 255 0;
          }
       }
 
@@ -42,14 +26,14 @@ group { name: "menu";
          effect: OUTLINE_SOFT_SHADOW;
          description { state: "default" 0.0;
             rel1 {
-               to: "splashscreen";
-               relative: 0.1 1.05;
+               to_x: "splashscreen";
+               relative: 0.1 0.93;
             }
             rel2 {
                to_x: "splashscreen";
-               relative: 0.9 0.8;
+               relative: 0.9 1;
             }
-            color_class: "hi-score";
+            color_class: "time";
             text {
                font: "nines";
                size: 16;
@@ -66,7 +50,7 @@ group { name: "menu";
             rel1.to: "hi-score_label";
             rel1.offset: 0 -4;
             rel2.to: "hi-score_label";
-            color_class: "hi-score";
+            color_class: "time";
             text {
                font: "nines";
                size: 20;
@@ -79,10 +63,7 @@ group { name: "menu";
       part { name: "info_clip";
          type: RECT;
          description { state: "default" 0.0;
-            rel1 {
-               to_y: "hi-score";
-               relative: 0 1;
-            }
+            rel1.relative: 0 0.8;
             color: 255 255 255 255;
          }
          description { state: "hidden" 0.0;
