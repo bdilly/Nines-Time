@@ -1,13 +1,14 @@
 #define ADD_BUTTON(_pos, _name) \
 part { name: _name"_bg"; \
+   type: RECT; \
    description { state: "default" 0.0; \
-      min: 40 40; \
-      max: 40 40; \
+      min: 40 36; \
+      max: 40 36; \
       align: 0 0; \
       rel1.to: "ops_bar"; \
       rel1.offset: (_pos * 40) 0; \
       rel2.to: "ops_bar"; \
-      image.normal: "button.png"; \
+      color: 255 255 255 0; \
    } \
 } \
 part { name: _name; \
@@ -89,6 +90,7 @@ group { name: "game";
       image: "sky0.png" COMP;
       image: "sky1.png" COMP;
       image: "sky2.png" COMP;
+      image: "top-bar.png" COMP;
    }
 
    parts {
@@ -175,11 +177,11 @@ group { name: "game";
     }
 
       part { name: "hud_bar";
-         type: RECT;
          description { state: "default" 0.0;
-            color: 0 0 0 192;
-            max: 99999 50;
+            min: 400 64;
+            max: 400 64;
             align: 0 0;
+            image.normal: "top-bar.png";
          }
       }
 
@@ -331,8 +333,9 @@ group { name: "game";
          type: RECT;
          description { state: "default" 0.0;
             visible: 0;
-            max: 160 40;
+            max: 160 36;
             rel1.to: "hud_bar";
+            rel1.offset: 0 4;
             rel2.to: "hud_bar";
             align: 0.5 0.5;
          }
