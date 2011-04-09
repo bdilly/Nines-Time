@@ -64,8 +64,18 @@ program { name: _name"_hi_off"; \
    action: STATE_SET "default" 0.0; \
    target: _name"_hi"; \
    transition: ACCELERATE 0.3; \
-}
-
+} \
+program { name: _name"_operation_chosen_set"; \
+   signal: _name; \
+   action: STATE_SET _name 0.0; \
+   target: "operation_chosen"; \
+   after: _name"_show_result_text_and_box"; \
+} \
+program { name: _name"_show_result_text_and_box"; \
+   action: STATE_SET "visible" 0.0; \
+   target: "result_box"; \
+   target: "result_text"; \
+} \
 
 group { name: "game";
 
@@ -202,6 +212,79 @@ group { name: "game";
                offset: -21 -100;
             }
          }
+      }
+
+      part { name: "result_box";
+         type: RECT;
+         description { state: "default" 0.0;
+            rel1.to: "hud_bar";
+            rel1 {
+                relative: 0 1;
+            }
+            max: 200 200;
+            color: 0 0 0 192;
+            visible: 0;
+         }
+         description { state: "visible" 0.0;
+            inherit: "default" 0.0;
+            visible: 1;
+         }
+      }
+
+      part { name: "operation_chosen";
+         description { state: "default" 0.0;
+            rel1.to: "result_box";
+            rel2.to: "result_box";
+            visible: 0;
+            image.normal: "over_bt.png";
+         }
+         description { state: "plus" 0.0;
+            inherit: "default" 0.0;
+            image.normal: "plus_bt.png";
+            visible: 1;
+         }
+         description { state: "minus" 0.0;
+            inherit: "default" 0.0;
+            image.normal: "minus_bt.png";
+            visible: 1;
+         }
+         description { state: "times" 0.0;
+            inherit: "default" 0.0;
+            image.normal: "times_bt.png";
+            visible: 1;
+         }
+         description { state: "over" 0.0;
+            inherit: "default" 0.0;
+            image.normal: "over_bt.png";
+            visible: 1;
+         }
+      }
+
+      part { name: "result_text";
+         type: TEXT;
+         description { state: "default " 0.0;
+            rel1.to: "result_box";
+            rel2.to: "result_box";
+            color: 255 0 255 255;
+            visible: 0;
+            text {
+               font: "nines";
+               size: 20;
+               text: "type result";
+            }
+         }
+         description { state: "visible" 0.0;
+            inherit: "default" 0.0;
+            visible: 1;
+         }
+      }
+
+      program { name: "result_box_hide";
+         action: STATE_SET "default" 0.0;
+         signal: "result_box_hide";
+         target: "operation_chosen";
+         target: "result_box";
+         target: "result_text";
       }
 
       part { name: "hi-score";

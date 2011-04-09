@@ -32,6 +32,10 @@ class Operation:
         self.game = game
         self.cooldown = 0
         self.game.part_drag_value_set(self.signal + "_block", 0, 0)
+        self.result = ""
+        self.digits = []
+        for i in range(10):
+            self.digits.append(str(i))
 
     def decrease_cooldown(self):
         self.cooldown = self.cooldown - 4
@@ -40,6 +44,18 @@ class Operation:
         if not drag:
             self.game.signal_emit(self.signal + "_hi", "")
         return self.cooldown
+
+    def input_text(self, obj, event):
+        kn = event.keyname
+        if kn in self.digits:
+            self.result += kn
+            self.game.part_text_set("result_text", self.result)
+        elif kn == "Return":
+            self.game.signal_emit("result_box_hide", "")
+            self.game.part_text_set("result_text", "type result")
+            print "Result = " + self.result
+            self.result = ""
+            self.game.on_key_down_del(self.input_text)
 
     def fire(self):
         if self.cooldown:
@@ -51,6 +67,7 @@ class Operation:
         self.game.signal_emit(self.signal, "")
         drag = self.cooldown / 100.
         self.game.part_drag_value_set(self.signal + "_block", 0, drag)
+        self.game.on_key_down_add(self.input_text)
 
 
 class Player:
