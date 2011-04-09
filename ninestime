@@ -388,6 +388,7 @@ class GameScreen(Screen):
         self.numbers_area.add_tuple(pair, op)
 
     def on_show(self):
+        self.ee.data["game"].signal_emit("reset", "")
         self.ee.data["game"].part_text_set("time", "Day 1")
         self.ee.data["time"] = 540
         self.ee.data["timer"] = timer_add(1, self._tick)

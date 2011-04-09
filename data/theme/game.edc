@@ -118,7 +118,7 @@ group { name: "game";
 
     programs {
         program { name: "sunset";
-            signal: "load";
+            signal: "start";
             action: STATE_SET "night" 0.0;
             target: "background_light";
             transition: ACCELERATE 30;
@@ -155,7 +155,7 @@ group { name: "game";
 
     programs {
         program { name: "sky_day";
-            signal: "load";
+            signal: "start";
             action: STATE_SET "low" 0.0;
             target: "sky";
             in: 15 0;
@@ -214,7 +214,7 @@ group { name: "game";
          }
       programs {
          program { name: "anim1";
-            signal: "load";
+            signal: "start";
             source: "";
             action: STATE_SET "drift" 0.0;
             transition: LINEAR 60;
@@ -421,5 +421,29 @@ group { name: "game";
          }
       }
 
+   }
+
+   programs {
+       program { name: "reset";
+            signal: "reset";
+            action: STATE_SET "default" 0.0;
+            target: "plus_block";
+            target: "plus_hi";
+            target: "minus_block";
+            target: "minus_hi";
+            target: "times_block";
+            target: "times_hi";
+            target: "over_block";
+            target: "over_hi";
+            target: "background_light";
+            target: "sky";
+            target: "clo";
+            target: "result_text";
+            target: "operation_chosen";
+            after: "start_sig";
+       }
+       program { name: "start_sig";
+            action: SIGNAL_EMIT "start" "";
+       }
    }
 }

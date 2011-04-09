@@ -1,4 +1,3 @@
-add signal to reset edje when enter new game (or create new edje obj)
 delete dead numbers on the canvas
 show operation on numbers copulation
 animate operations symbols on input (increase size and alpha)
