@@ -168,7 +168,7 @@ group { name: "game";
             after: "sky_night";
         }
         program { name: "sky_night";
-            action: STATE_SET "down" 0.0;
+            action: STATE_SET "up" 0.0;
             target: "sky";
             in: 15 0;
             after: "sky_up";
