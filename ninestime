@@ -91,7 +91,6 @@ class Player:
         self.plus = Operation(game, "plus", '+')
         self.times = Operation(game, "times", '*')
         self.over = Operation(game, "over", '/')
-        self.score = 0
         self.ee = ee
 
     def stop_ops(self):
@@ -100,8 +99,40 @@ class Player:
         self.times.stop()
         self.over.stop()
 
-    def score_inc(self, delta):
-        self.score = self.score + delta
+
+class Score:
+    points = 0
+    combo = 0
+    inc = 10
+
+    def points_inc(self):
+        self.points += self.inc + self.combo
+        self._combo_inc()
+
+    def points_get(self):
+        return self.points
+
+    def combo_get(self):
+        return self.combo
+
+    def reset(self):
+        self.points = 0
+        self.combo = 0
+
+    def _combo_inc(self):
+        self.combo += 1
+
+    def combo_stop(self):
+        self.combo = 0
+
+    def __iadd__(self, y):
+        self.points_inc(y)
+
+    def __isub__(self, y):
+        self.points_dec(y)
+
+    def __str__(self):
+        return str(self.points)
 
 
 class Hooks:
@@ -426,6 +457,7 @@ class NumbersArea(ClippedSmartObject):
             self.ee.data["game"].signal_emit("result_correct", "")
             self.speed_inc()
             print "result correct!", r
+            Hooks.fire("scoreinc")
         n1.delete()
         n2.delete()
 
@@ -460,6 +492,7 @@ class GameScreen(Screen):
         self.numbers_area = NumbersArea(ee)
         self.screen.part_swallow("numbers_area", self.numbers_area)
         Hooks.add("resultready", self.apply_result_operation)
+        Hooks.add("scoreinc", self.score_inc)
 
     def _tock(self):
         self.ee.data["time"] = self.ee.data["time"] - 1
@@ -514,6 +547,11 @@ class GameScreen(Screen):
         print "apply result for", op, result
         self.numbers_area.apply_result_operation(op, result)
 
+    def score_inc(self):
+        score = self.ee.data["score"]
+        score.points_inc()
+        self.screen.part_text_set("score", str(score))
+
 class MenuScreen(Screen):
     def __init__(self, ee):
         Screen.__init__(self, ee, "menu", on_show_hook_name="show_menu")
@@ -558,7 +596,7 @@ def game_main():
     bg.show()
 
     ee.data["bg"] = bg
-    ee.data["score"] = 0
+    ee.data["score"] = Score()
     ee.data["hi-score"] = 0
     ee.size_min_set(*screen_size)
     ee.size_max_set(*screen_size)
