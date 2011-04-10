@@ -523,6 +523,7 @@ class GameScreen(Screen):
         Hooks.fire("music", GAME_MUSIC)
         self.ee.data["player"] = Player(self.ee)
         self.give_focus()
+        self.screen.part_text_set("hi-score", str(self.ee.data["hi-score"]))
         self.show()
 
     def on_key_down(self, obj, event):
@@ -566,6 +567,11 @@ class MenuScreen(Screen):
         Hooks.fire("music", MENU_MUSIC)
 
     def on_show(self):
+        score = self.ee.data["score"]
+        points = score.points_get()
+        score.reset()
+        if points > self.ee.data["hi-score"]:
+            self.ee.data["hi-score"] = points
         self.give_focus()
         Hooks.fire("music", MENU_MUSIC)
         self.show()
