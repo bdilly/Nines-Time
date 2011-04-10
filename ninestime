@@ -242,7 +242,7 @@ class VisualNumber(ClippedSmartObject):
     def __str__(self):
         return str(self.number)
 
-    def number(self):
+    def number_get(self):
         return self.number
 
     def resize(self, w, h):
@@ -458,7 +458,8 @@ class NumbersArea(ClippedSmartObject):
     def check_operation(self, op):
         if len(self.numbers) < 2:
             return
-        if op == '/' and self.numbers[1][1].number() == 0:
+        print self.numbers[1]
+        if op == '/' and self.numbers[1][0].number_get() == 0:
             return
 
     def clear(self):
