@@ -2,3 +2,6 @@ implement score
 improve cooldown system (it should have more cooldown time to +,
  then, -, and then * /)
 BUG: it reached day 10 and the game continued
+
+ - when applying an operation to two numbers, the result should be put into
+   the list of numbers again, as a new number;
