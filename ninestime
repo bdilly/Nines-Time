@@ -120,39 +120,10 @@ class Hooks:
 class RandomGen:
 
     ops = ('+', '-', '*')
-    interval = 3.0 # seconds
-    default_interval = 3.0
-    must_update = False # timer interval must be updated or not
 
     def __init__(self, cb=None, seed=None):
         self.random = Random()
         self.random.seed(seed)
-        self.timer = None
-        self.cb = cb
-
-    def __del__(self):
-        if self.timer:
-            self.timer.delete()
-            self.timer = None
-
-    def _timer_cb(self):
-        n1, n2 = self.get_pair()
-        op = self.get_op()
-
-        if n1 < n2:
-            n1, n2 = n2, n1
-
-        if self.cb:
-            self.cb((n1, n2), op)
-
-        if self.must_update:
-            self.must_update = False
-            self.timer_update()
-            return False
-        return True
-
-    def timer_update(self):
-        self.timer = timer_add(self.interval, self._timer_cb)
 
     def get_number(self):
         return self.random.randint(0, 8)
@@ -162,24 +133,6 @@ class RandomGen:
 
     def get_op(self):
         return self.random.choice(self.ops)
-
-    def set_interval(self, interval):
-        self.interval = interval
-        self.must_update = True
-
-    def speed_set(self, speed):
-        self.interval = self.default_interval / (speed / 10.0)
-        self.must_update = True
-
-    def start(self):
-        self.timer = timer_add(self.interval, self._timer_cb)
-
-    def stop(self):
-        self.timer.delete()
-        self.timer = None
-
-    def is_running(self):
-        return self.timer
 
 
 def resize_cb(ee):
@@ -348,8 +301,11 @@ class NumbersArea(ClippedSmartObject):
     speed_increment = 1
     speed_decrement = 10
 
+    max_timer_simulator = 1500
+
     def __init__(self, ee):
         ClippedSmartObject.__init__(self, ee.evas)
+
         self.numbers = [] # list of tuples (visual number, position [0-100])
         self.n1 = None
         self.n2 = None
@@ -362,12 +318,25 @@ class NumbersArea(ClippedSmartObject):
         self.speed = self.min_speed
         self.ee = ee
         self.randomgen = RandomGen(self._gen_cb)
-        self.randomgen.start()
+        self.timer_simulator = 0
+        self._anim_start()
 
     def _gen_cb(self, pair, op):
         self.add_tuple(pair, op)
 
+    def _add_new_tuple(self):
+        self.timer_simulator = 0
+        n1, n2 = self.randomgen.get_pair()
+        op = self.randomgen.get_op()
+
+        if n1 < n2:
+            n1, n2 = n2, n1
+        self.add_tuple((n1, n2), op)
+
     def _anim_cb(self):
+        self.timer_simulator += self.speed
+        if self.timer_simulator > self.max_timer_simulator:
+            self._add_new_tuple()
         for i, vn in enumerate(self.numbers):
             vn = (vn[0], vn[1] + self.speed / 10)
             self.numbers[i] = vn
@@ -399,10 +368,8 @@ class NumbersArea(ClippedSmartObject):
 
     def _speed_apply(self):
         print "setting speed to:", self.speed
-        self.randomgen.speed_set(self.speed)
 
     def add_tuple(self, pair, op):
-        self._anim_start()
 
         if self.n1 != None and self.n2 != None and self.op != None:
             mystr = str(self.n1) + ' ' + str(self.op) + ' ' + str(self.n2)
@@ -481,7 +448,6 @@ class NumbersArea(ClippedSmartObject):
         self.op.op_set(None)
         self._anim_stop()
         self.anim = None
-        self.randomgen.stop()
 
     def resize(self, w, h):
         for vn in self.numbers:
