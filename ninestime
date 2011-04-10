@@ -121,6 +121,8 @@ class RandomGen:
 
     ops = ('+', '-', '*')
     interval = 3.0 # seconds
+    default_interval = 3.0
+    must_update = False # timer interval must be updated or not
 
     def __init__(self, cb=None, seed=None):
         self.random = Random()
@@ -142,7 +144,15 @@ class RandomGen:
 
         if self.cb:
             self.cb((n1, n2), op)
+
+        if self.must_update:
+            self.must_update = False
+            self.timer_update()
+            return False
         return True
+
+    def timer_update(self):
+        self.timer = timer_add(self.interval, self._timer_cb)
 
     def get_number(self):
         return self.random.randint(0, 8)
@@ -155,8 +165,11 @@ class RandomGen:
 
     def set_interval(self, interval):
         self.interval = interval
-        self.timer.delete()
-        self.timer = timer_add(interval, self._timer_cb)
+        self.must_update = True
+
+    def speed_set(self, speed):
+        self.interval = self.default_interval / (speed / 10.0)
+        self.must_update = True
 
     def start(self):
         self.timer = timer_add(self.interval, self._timer_cb)
@@ -324,14 +337,16 @@ class NumbersArea(ClippedSmartObject):
     Each tick of the clock will move them by 1, multiplied by a number of
     pixels plus/times a speed (difficulty).
 
-    speed should go from 10 to 100
+    speed should go from 10 to 1000
     """
 
     min_run = 0
     max_run = 1000
 
     min_speed = 10.0
-    max_speed = 100.0
+
+    speed_increment = 1
+    speed_decrement = 10
 
     def __init__(self, ee):
         ClippedSmartObject.__init__(self, ee.evas)
@@ -346,6 +361,11 @@ class NumbersArea(ClippedSmartObject):
         self.anim = None
         self.speed = self.min_speed
         self.ee = ee
+        self.randomgen = RandomGen(self._gen_cb)
+        self.randomgen.start()
+
+    def _gen_cb(self, pair, op):
+        self.add_tuple(pair, op)
 
     def _anim_cb(self):
         for i, vn in enumerate(self.numbers):
@@ -366,6 +386,20 @@ class NumbersArea(ClippedSmartObject):
         if self.anim:
             self.anim.delete()
             self.anim = None
+
+    def speed_inc(self):
+        self.speed += self.speed_increment
+        self._speed_apply()
+
+    def speed_dec(self):
+        self.speed -= self.speed_decrement
+        if self.speed < self.min_speed:
+            self.speed = self.min_speed
+        self._speed_apply()
+
+    def _speed_apply(self):
+        print "setting speed to:", self.speed
+        self.randomgen.speed_set(self.speed)
 
     def add_tuple(self, pair, op):
         self._anim_start()
@@ -411,6 +445,7 @@ class NumbersArea(ClippedSmartObject):
 
     def expire_number(self, vn):
         print "number", vn, "has reached its end. Apply penality!"
+        self.speed_dec()
 
     def apply_result_operation(self, op, result):
         self.check_operation(op)
@@ -422,6 +457,7 @@ class NumbersArea(ClippedSmartObject):
             print "wrong result! correct one should be", r
         else:
             self.ee.data["game"].signal_emit("result_correct", "")
+            self.speed_inc()
             print "result correct!", r
         n1.delete()
         n2.delete()
@@ -445,6 +481,7 @@ class NumbersArea(ClippedSmartObject):
         self.op.op_set(None)
         self._anim_stop()
         self.anim = None
+        self.randomgen.stop()
 
     def resize(self, w, h):
         for vn in self.numbers:
@@ -474,9 +511,6 @@ class GameScreen(Screen):
             return False
         return True
 
-    def _gen_cb(self, pair, op):
-        self.numbers_area.add_tuple(pair, op)
-
     def on_show(self):
         self.ee.data["game"].signal_emit("reset", "")
         self.ee.data["game"].part_text_set("time", "Day 1")
@@ -485,8 +519,6 @@ class GameScreen(Screen):
         self.ee.data["timer2"] = timer_add(60, self._tock)
         Hooks.fire("music", GAME_MUSIC)
         self.ee.data["player"] = Player(self.ee)
-        self.ee.data["randomgen"] = RandomGen(self._gen_cb)
-        self.ee.data["randomgen"].start()
         self.give_focus()
         self.show()
 
@@ -495,9 +527,7 @@ class GameScreen(Screen):
         if kn == "Escape":
             self.ee.data.pop("timer").delete()
             self.ee.data.pop("timer2").delete()
-            self.ee.data["randomgen"].stop()
             self.ee.data["player"].stop_ops()
-            del self.ee.data["randomgen"]
             self.numbers_area.clear()
             self.hide()
             Hooks.fire("show_menu")
