@@ -435,8 +435,8 @@ class NumbersArea(ClippedSmartObject):
 
     def apply_result_operation(self, op, result):
         self.check_operation(op)
-        n1, pos = self.numbers.pop(0)
-        n2, pos = self.numbers.pop(0)
+        n1, pos = self.numbers[0]
+        n2, pos = self.numbers[1]
         r = eval(str(n1) + ' ' + op + ' ' + str(n2))
         if r != result:
             self.ee.data["game"].signal_emit("result_wrong", "")
@@ -448,8 +448,11 @@ class NumbersArea(ClippedSmartObject):
             self.speed_inc()
             print "result correct!", r
             Hooks.fire("scoreinc")
-        n1.delete()
-        n2.delete()
+
+            self.numbers.pop(0)
+            self.numbers.pop(0)
+            n1.delete()
+            n2.delete()
 
     def check_operation(self, op):
         if len(self.numbers) < 2:
