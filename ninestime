@@ -444,6 +444,7 @@ class NumbersArea(ClippedSmartObject):
     def expire_number(self, vn):
         print "number", vn, "has reached its end. Apply penality!"
         self.speed_dec()
+        Hooks.fire("scoreslowdown")
 
     def apply_result_operation(self, op, result):
         self.check_operation(op)
@@ -495,6 +496,7 @@ class GameScreen(Screen):
         self.screen.part_swallow("numbers_area", self.numbers_area)
         Hooks.add("resultready", self.apply_result_operation)
         Hooks.add("scoreinc", self.score_inc)
+        Hooks.add("scoreslowdown", self.score_slowdown)
 
     def _tock(self):
         self.ee.data["time"] = self.ee.data["time"] - 1
@@ -553,6 +555,10 @@ class GameScreen(Screen):
         score = self.ee.data["score"]
         score.points_inc()
         self.screen.part_text_set("score", str(score))
+
+    def score_slowdown(self):
+        score = self.ee.data["score"]
+        score.combo_stop()
 
 class MenuScreen(Screen):
     def __init__(self, ee):
