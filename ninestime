@@ -350,7 +350,7 @@ class NumbersArea(ClippedSmartObject):
         self.ee = ee
         self.randomgen = RandomGen(self._gen_cb)
         self.timer_simulator = 0
-        self._anim_start()
+        self.anim_start()
 
     def _gen_cb(self, pair, op):
         self.add_tuple(pair, op)
@@ -378,11 +378,11 @@ class NumbersArea(ClippedSmartObject):
                 self.move_number(vn[0], vn[1])
         return True
 
-    def _anim_start(self):
+    def anim_start(self):
         if not self.anim:
             self.anim = animator_add(self._anim_cb)
 
-    def _anim_stop(self):
+    def anim_stop(self):
         if self.anim:
             self.anim.delete()
             self.anim = None
@@ -481,7 +481,7 @@ class NumbersArea(ClippedSmartObject):
             self.n2.delete()
             self.n2 = None
         self.op.op_set(None)
-        self._anim_stop()
+        self.anim_stop()
         self.anim = None
 
     def resize(self, w, h):
@@ -524,7 +524,9 @@ class GameScreen(Screen):
         self.ee.data["player"] = Player(self.ee)
         self.give_focus()
         self.screen.part_text_set("hi-score", str(self.ee.data["hi-score"]))
+        self.screen.part_text_set("score", "0")
         self.show()
+        self.numbers_area.anim_start()
 
     def on_key_down(self, obj, event):
         kn = event.key
