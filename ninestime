@@ -541,10 +541,10 @@ class GameScreen(Screen):
     def score_inc(self):
         score = self.ee.data["score"]
         score.points_inc()
-        combo = score.combo_get()
+        combo = score.combo_get() - 1
         if combo:
             pos = self.random.randint(1, 5)
-            self.screen.part_text_set("combo%d" % (pos), str(combo))
+            self.screen.part_text_set("combo%d" % (pos), "+" + str(combo))
             self.screen.signal_emit("combo%d_pop" % (pos), "")
         self.screen.part_text_set("score", '%06d' % (score.points_get()))
 
