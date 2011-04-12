@@ -164,52 +164,66 @@ group { name: "game";
         }
     }
 
-      part { name: "sky";
+      part { name: "sky_day";
          description { state: "default" 0.0;
             min: 400 278;
             max: 400 278;
             align: 0 0;
             image.normal: "sky0.png";
          }
-         description { state: "low" 0.0;
-            inherit: "default" 0.0;
+      }
+      part { name: "sky_low";
+         description { state: "default" 0.0;
+            min: 400 278;
+            max: 400 278;
+            color: 255 255 255 0;
+            align: 0 0;
             image.normal: "sky2.png";
          }
-         description { state: "night" 0.0;
+         description { state: "visible" 0.0;
             inherit: "default" 0.0;
+            color: 255 255 255 255;
+         }
+      }
+      part { name: "sky_night";
+         description { state: "default" 0.0;
+            min: 400 278;
+            max: 400 278;
+            color: 255 255 255 0;
+            align: 0 0;
             image.normal: "sky1.png";
          }
-         description { state: "up" 0.0;
+         description { state: "visible" 0.0;
             inherit: "default" 0.0;
-            image.normal: "sky2.png";
+            color: 255 255 255 255;
          }
       }
 
     programs {
-        program { name: "sky_day";
+        program { name: "sky_low_anim";
             signal: "start";
-            action: STATE_SET "low" 0.0;
-            target: "sky";
-            in: 15 0;
-            after: "sky_low";
+            action: STATE_SET "visible" 0.0;
+            target: "sky_low";
+            transition: ACCELERATE 15;
+            after: "sky_night_anim";
         }
-        program { name: "sky_low";
-            action: STATE_SET "night" 0.0;
-            target: "sky";
-            in: 15 0;
-            after: "sky_night";
+        program { name: "sky_night_anim";
+            action: STATE_SET "visible" 0.0;
+            target: "sky_night";
+            transition: DECELERATE 15;
+            after: "sky_up_anim";
         }
-        program { name: "sky_night";
-            action: STATE_SET "up" 0.0;
-            target: "sky";
-            in: 15 0;
-            after: "sky_up";
-        }
-        program { name: "sky_up";
+        program { name: "sky_up_anim";
             action: STATE_SET "default" 0.0;
-            target: "sky";
-            in: 15 0;
-            after: "sky_day";
+            target: "sky_night";
+            transition: ACCELERATE 15;
+            after: "sky_day_anim";
+        }
+        program { name: "sky_day_anim";
+            action: STATE_SET "default" 0.0;
+            target: "sky_low";
+            transition: DECELERATE 15;
+            after: "sky_low_anim";
         }
     }
          part { name: "clo";
@@ -476,7 +490,9 @@ group { name: "game";
             target: "over_block";
             target: "over_hi";
             target: "background_light";
-            target: "sky";
+            target: "sky_day";
+            target: "sky_night";
+            target: "sky_low";
             target: "clo";
             target: "result_text";
             target: "result_clip";
