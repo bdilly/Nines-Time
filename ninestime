@@ -376,16 +376,11 @@ class NumbersArea(ClippedSmartObject):
 
     def speed_inc(self):
         self.speed += self.speed_increment
-        self._speed_apply()
 
     def speed_dec(self):
         self.speed -= self.speed_decrement
         if self.speed < self.min_speed:
             self.speed = self.min_speed
-        self._speed_apply()
-
-    def _speed_apply(self):
-        print "setting speed to:", self.speed
 
     def add_tuple(self, pair, op):
 
@@ -429,7 +424,6 @@ class NumbersArea(ClippedSmartObject):
         vn.resize(wid, hei)
 
     def expire_number(self, vn):
-        print "number", vn, "has reached its end. Apply penality!"
         self.speed_dec()
         Hooks.fire("scoreslowdown")
 
@@ -441,12 +435,10 @@ class NumbersArea(ClippedSmartObject):
         if r != result:
             self.ee.data["game"].signal_emit("result_wrong", "")
             Hooks.fire("sound", WRONG_SOUND)
-            print "wrong result! correct one should be", r
         else:
             self.ee.data["game"].signal_emit("result_correct", "")
             Hooks.fire("sound", RIGHT_SOUND)
             self.speed_inc()
-            print "result correct!", r
             Hooks.fire("scoreinc")
 
             self.numbers.pop(0)
@@ -541,7 +533,6 @@ class GameScreen(Screen):
             self.ee.data["game"].part_text_set("result_text", "|")
 
     def apply_result_operation(self, op, result):
-        print "apply result for", op, result
         self.numbers_area.apply_result_operation(op, result)
 
     def score_inc(self):
