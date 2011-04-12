@@ -54,7 +54,7 @@ group { name: "menu";
             text {
                font: "nines";
                size: 20;
-               text: "000000000";
+               text: "";
                align: 1 0;
             }
          }

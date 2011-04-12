@@ -556,6 +556,7 @@ class GameScreen(Screen):
 class MenuScreen(Screen):
     def __init__(self, ee):
         Screen.__init__(self, ee, "menu", on_show_hook_name="show_menu")
+        self.screen.part_text_set("hi-score", "000000")
         Hooks.fire("music", MENU_MUSIC)
 
     def on_show(self):
@@ -564,6 +565,7 @@ class MenuScreen(Screen):
         score.reset()
         if points > self.ee.data["hi-score"]:
             self.ee.data["hi-score"] = points
+            self.screen.part_text_set("hi-score", '%06d' % (points))
         self.give_focus()
         Hooks.fire("music", MENU_MUSIC)
         self.show()
