@@ -482,7 +482,7 @@ class GameScreen(Screen):
 
     def _tock(self):
         day = ((540 - self.ee.data["time"]) / 60) + 1
-        self.ee.data["game"].part_text_set("time", "Day " + str(day))
+        self.screen.part_text_set("time", "Day " + str(day))
         if (self.ee.data["time"] < 1):
             return False
         return True
@@ -496,8 +496,8 @@ class GameScreen(Screen):
         return True
 
     def on_show(self):
-        self.ee.data["game"].signal_emit("reset", "")
-        self.ee.data["game"].part_text_set("time", "Day 1")
+        self.screen.signal_emit("reset", "")
+        self.screen.part_text_set("time", "Day 1")
         self.ee.data["time"] = 540
         self.ee.data["timer"] = timer_add(1, self._tick)
         self.ee.data["timer2"] = timer_add(60, self._tock)
@@ -521,16 +521,16 @@ class GameScreen(Screen):
             Hooks.fire("show_menu")
         elif kn in ["plus", "KP_Add"]:
             self.ee.data["player"].plus.fire()
-            self.ee.data["game"].part_text_set("result_text", "|")
+            self.screen.part_text_set("result_text", "|")
         elif kn in ["minus", "KP_Subtract"]:
             self.ee.data["player"].minus.fire()
-            self.ee.data["game"].part_text_set("result_text", "|")
+            self.screen.part_text_set("result_text", "|")
         elif kn in ["asterisk", "KP_Multiply"]:
             self.ee.data["player"].times.fire()
-            self.ee.data["game"].part_text_set("result_text", "|")
+            self.screen.part_text_set("result_text", "|")
         elif kn in ["slash", "KP_Divide"]:
             self.ee.data["player"].over.fire()
-            self.ee.data["game"].part_text_set("result_text", "|")
+            self.screen.part_text_set("result_text", "|")
 
     def apply_result_operation(self, op, result):
         self.numbers_area.apply_result_operation(op, result)
