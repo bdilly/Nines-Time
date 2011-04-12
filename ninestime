@@ -478,6 +478,7 @@ class GameScreen(Screen):
         Screen.__init__(self, ee, "game", on_show_hook_name="start_game")
         self.numbers_area = NumbersArea(ee)
         self.screen.part_swallow("numbers_area", self.numbers_area)
+        self.random = Random()
         Hooks.add("resultready", self.apply_result_operation)
         Hooks.add("scoreinc", self.score_inc)
         Hooks.add("scoreslowdown", self.score_slowdown)
@@ -540,6 +541,11 @@ class GameScreen(Screen):
     def score_inc(self):
         score = self.ee.data["score"]
         score.points_inc()
+        combo = score.combo_get()
+        if combo:
+            pos = self.random.randint(1, 5)
+            self.screen.part_text_set("combo%d" % (pos), str(combo))
+            self.screen.signal_emit("combo%d_pop" % (pos), "")
         self.screen.part_text_set("score", '%06d' % (score.points_get()))
 
     def score_slowdown(self):

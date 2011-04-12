@@ -1,3 +1,58 @@
+#define ADD_COMBO(_pos) \
+part { name: "combo"##_pos##"_clip"; \
+   type: RECT; \
+   description { state: "default " 0.0; \
+      color: 255 255 255 0; \
+   } \
+   description { state: "visible" 0.0; \
+      inherit: "default" 0.0; \
+      color: 255 255 255 255; \
+   } \
+   description { state: "pop" 0.0; \
+      inherit: "default" 0.0; \
+      color: 255 255 255 0; \
+   } \
+} \
+part { name: "combo"##_pos; \
+   clip_to: "combo"##_pos##"_clip"; \
+   type: TEXT; \
+   description { state: "default " 0.0; \
+      rel1.offset: (80 + _pos * 30) (300 - _pos * 50); \
+      color_class: "combo"; \
+      text { \
+         font: "nines"; \
+         size: 20; \
+         text: "0"; \
+      } \
+   } \
+   description { state: "visible" 0.0; \
+      inherit: "default" 0.0; \
+   } \
+   description { state: "pop" 0.0; \
+      inherit: "default" 0.0; \
+      text.size: 100; \
+      } \
+} \
+program { name: "combo"##_pos##"_visible"; \
+    signal: "combo"##_pos##"_pop"; \
+    action: STATE_SET "visible" 0.0; \
+    target: "combo"##_pos; \
+    target: "combo"##_pos##"_clip"; \
+    after: "combo"##_pos##"_pop"; \
+ } \
+program { name: "combo"##_pos##"_pop"; \
+    action: STATE_SET "pop" 0.0; \
+    target: "combo"##_pos; \
+    target: "combo"##_pos##"_clip"; \
+    transition: ACCELERATE 1; \
+    after: "combo"##_pos##"_hide"; \
+ } \
+program { name: "combo"##_pos##"_hide"; \
+   action: STATE_SET "default" 0.0; \
+   target: "combo"##_pos; \
+   target: "combo"##_pos##"_clip"; \
+}
+
 #define ADD_OPERATION(_name) \
 part { name: "operation_"_name; \
     description { state: "default" 0.0; \
@@ -474,6 +529,12 @@ group { name: "game";
             align: 0 0;
          }
       }
+
+      ADD_COMBO(1)
+      ADD_COMBO(2)
+      ADD_COMBO(3)
+      ADD_COMBO(4)
+      ADD_COMBO(5)
 
    }
 
