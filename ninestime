@@ -19,6 +19,8 @@ from emotion import Emotion
 from random import Random
 from math import log
 
+import cPickle
+
 DATA_DIR = abspath("./data")
 THEME = join(DATA_DIR, "theme", "default.edj")
 MENU_MUSIC = "flanicx_-_2_dias_(synth_wave_gap_solo).mp3"
@@ -27,6 +29,57 @@ OPS_SOUND = "111872__candlegravity__tweak_scratch_2.wav"
 RIGHT_SOUND = "111877__candlegravity__zipper_1.wav"
 WRONG_SOUND = "111873__candlegravity__tweat_down_1.wav"
 GAME_START_SOUND = "Strong_Punch-Mike_Koenig-574430706.wav"
+NTDATAFILE = ".ntdata.pickle"
+
+def _get_home():
+    import os
+    HOME = os.getenv("HOME", "/tmp")
+    return HOME
+
+class NTData:
+    """
+    Class that will store all persistent data of the game.
+    """
+
+    def __init__(self):
+        self.hiscore = 0
+
+    @staticmethod
+    def load():
+        try:
+            f = open(_get_home() + "/.ntdata.pickle")
+        except IOError, e:
+            print "Couldn't open pickle file:", e
+            ntdata = NTData()
+        else:
+            try:
+                ntdata = cPickle.load(f)
+            except:
+                print "couldn't load pickle file, use a new data file"
+                ntdata = NTData()
+            finally:
+                f.close()
+
+        return ntdata
+
+    def save(self):
+        try:
+            f = open(_get_home() + "/.ntdata.pickle", "w")
+        except IOError, e:
+            print "Couldn't open pickle file:", e
+        else:
+            cPickle.dump(self, f)
+            f.close()
+
+    def hiscore_update(self, points):
+        if points > self.hiscore:
+            self.hiscore = points
+
+    def hiscore_get(self):
+        return self.hiscore
+
+    def hiscore_set(self, points):
+        self.hiscore = points
 
 
 class Operation:
@@ -508,7 +561,7 @@ class GameScreen(Screen):
         self.ee.data["player"] = Player(self.ee)
         self.give_focus()
         self.screen.part_text_set("hi-score",
-                '%06d' % (self.ee.data["hi-score"]))
+                '%06d' % (self.ee.data["ntdata"].hiscore_get()))
         self.screen.part_text_set("score", "000000")
         self.show()
         self.numbers_area.anim_start()
@@ -562,9 +615,8 @@ class MenuScreen(Screen):
         score = self.ee.data["score"]
         points = score.points_get()
         score.reset()
-        if points > self.ee.data["hi-score"]:
-            self.ee.data["hi-score"] = points
-            self.screen.part_text_set("hi-score", '%06d' % (points))
+        self.ee.data["ntdata"].hiscore_update(points)
+        self.screen.part_text_set("hi-score", '%06d' % (points))
         self.give_focus()
         Hooks.fire("music", MENU_MUSIC)
         self.show()
@@ -594,6 +646,20 @@ def sweet_emotion(ee):
     Hooks.add("music", play, music_player)
     Hooks.add("sound", play, sound_player)
 
+def _load_ntdata(ee):
+    try:
+        f = open("score.pickle")
+    except IOError, e:
+        print "No pickle file, start with a new score."
+        ee.data["ntdata"] = NTData()
+    else:
+        try:
+            ee.data["ntdata"] = cPickle.load(f)
+        except:
+            print "couldn't load pickle file, use a new data file"
+            ee.data["ntdata"] = NTData()
+        f.close()
+
 def game_main():
     screen_size = (400, 600)
     ee = SoftwareX11(w=screen_size[0], h=screen_size[1])
@@ -605,7 +671,7 @@ def game_main():
 
     ee.data["bg"] = bg
     ee.data["score"] = Score()
-    ee.data["hi-score"] = 0
+    ee.data["ntdata"] = NTData.load()
     ee.size_min_set(*screen_size)
     ee.size_max_set(*screen_size)
     ee.callback_resize = resize_cb
@@ -624,6 +690,8 @@ def game_main():
 
     ee.show()
     main_loop_begin()
+
+    ee.data["ntdata"].save()
 
     del canvas
     del ee

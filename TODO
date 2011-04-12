@@ -3,7 +3,6 @@ improve cooldown system (it should have more cooldown time to +,
 when applying an operation to two numbers, the result should be put into the
 list of numbers again, as a new number;
 
- - save hi-score on disk;
  - make the two numbers at the top with the operation start to move as the timer
    goes on;
  - show the two numbers that are being operated in the middle of the screen.
