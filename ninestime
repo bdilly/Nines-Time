@@ -338,7 +338,6 @@ class NumbersArea(ClippedSmartObject):
         self.ee = ee
         self.randomgen = RandomGen(self._gen_cb)
         self.timer_simulator = 0
-        self.anim_start()
 
     def _gen_cb(self, pair, op):
         self.add_tuple(pair, op)
