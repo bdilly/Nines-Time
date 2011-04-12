@@ -1,8 +1,9 @@
 #!/usr/bin/python
 #
 # Bruno Dilly, Joao Vita, Rafael Antognolli and Leandro Pereira wrote this file.
-# As long as you retain this notice you can do whatever you want with this stuff. If we
-# meet some day, and you think this stuff if worth it, you can buy me a beer in return.
+# As long as you retain this notice you can do whatever you want with this
+# stuff. If we meet some day, and you think this stuff if worth it, you can buy
+# me a beer in return.
 #
 
 from os.path import abspath, join
@@ -417,7 +418,8 @@ class NumbersArea(ClippedSmartObject):
         return 15.1659554629 * log(y) + 19.9185536599
 
     def move_number(self, vn, pos):
-        pos_y = self.pos[1] + 100 + pos * (self.size[1] - 100 - vn.size[1]) / self.max_run
+        pos_y = self.pos[1] + 100 + pos * (self.size[1] - 100 - vn.size[1]) / \
+             self.max_run
         pos_x = NumbersArea.walk_function(pos_y)
         wid = hei = NumbersArea.size_function(pos_y)
         vn.move(pos_x, pos_y + 45)
