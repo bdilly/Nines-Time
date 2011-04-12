@@ -521,6 +521,8 @@ class NumbersArea(ClippedSmartObject):
             self.n2 = None
         self.op.op_set(None)
         self.anim_stop()
+        self.speed = self.min_speed
+        self.timer_simulator = 0
         self.anim = None
 
     def resize(self, w, h):
