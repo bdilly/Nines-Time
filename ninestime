@@ -512,8 +512,9 @@ class GameScreen(Screen):
         Hooks.fire("music", GAME_MUSIC)
         self.ee.data["player"] = Player(self.ee)
         self.give_focus()
-        self.screen.part_text_set("hi-score", str(self.ee.data["hi-score"]))
-        self.screen.part_text_set("score", "0")
+        self.screen.part_text_set("hi-score",
+                '%06d' % (self.ee.data["hi-score"]))
+        self.screen.part_text_set("score", "000000")
         self.show()
         self.numbers_area.anim_start()
 
@@ -546,7 +547,7 @@ class GameScreen(Screen):
     def score_inc(self):
         score = self.ee.data["score"]
         score.points_inc()
-        self.screen.part_text_set("score", str(score))
+        self.screen.part_text_set("score", '%06d' % (score.points_get()))
 
     def score_slowdown(self):
         score = self.ee.data["score"]
