@@ -620,7 +620,8 @@ class MenuScreen(Screen):
         points = score.points_get()
         score.reset()
         self.ee.data["ntdata"].hiscore_update(points)
-        self.screen.part_text_set("hi-score", '%06d' % (points))
+        self.screen.part_text_set(
+            "hi-score", '%06d' % (self.ee.data["ntdata"].hiscore_get()))
         self.give_focus()
         Hooks.fire("music", MENU_MUSIC)
         self.show()
