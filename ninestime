@@ -486,6 +486,8 @@ class NumbersArea(ClippedSmartObject):
         self.check_operation(op)
         n1, pos = self.numbers[0]
         n2, pos = self.numbers[1]
+        if n2.number_get() > n1.number_get():
+            n1, n2 = n2, n1
         r = eval(str(n1) + ' ' + op + ' ' + str(n2))
         if r != result:
             self.ee.data["game"].signal_emit("result_wrong", "")
