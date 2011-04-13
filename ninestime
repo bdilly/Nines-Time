@@ -612,8 +612,6 @@ class GameScreen(Screen):
 class MenuScreen(Screen):
     def __init__(self, ee):
         Screen.__init__(self, ee, "menu", on_show_hook_name="show_menu")
-        self.screen.part_text_set("hi-score", "000000")
-        Hooks.fire("music", MENU_MUSIC)
 
     def on_show(self):
         score = self.ee.data["score"]
@@ -688,7 +686,7 @@ def game_main():
     game = GameScreen(ee)
     win = WinScreen(ee)
 
-    menu.show()
+    Hooks.fire("show_menu")
 
     # Sets the framerate of the game to 60FPS
     animator_frametime_set(1.0 / 60.0)
