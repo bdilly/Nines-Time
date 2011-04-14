@@ -188,6 +188,7 @@ group { name: "game";
    parts {
 
       part { name: "background";
+         clip_to: "background_light";
          description { state: "default" 0.0;
             image.normal: "background.png";
          }
@@ -196,10 +197,10 @@ group { name: "game";
       part { name: "background_light";
          type: RECT;
          description { state: "default" 0.0;
-            color: 255 170 10 90;
+            color: 255 220 200 255;
          }
          description { state: "night" 0.0;
-            color: 255 255 255 0;
+            color: 60 60 60 255;
          }
       }
 
