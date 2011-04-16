@@ -187,39 +187,6 @@ group { name: "game";
 
    parts {
 
-      part { name: "background";
-         clip_to: "background_light";
-         description { state: "default" 0.0;
-            image.normal: "background.png";
-         }
-      }
-
-      part { name: "background_light";
-         type: RECT;
-         description { state: "default" 0.0;
-            color: 255 220 200 255;
-         }
-         description { state: "night" 0.0;
-            color: 60 60 60 255;
-         }
-      }
-
-    programs {
-        program { name: "sunset";
-            signal: "start";
-            action: STATE_SET "night" 0.0;
-            target: "background_light";
-            transition: ACCELERATE 30;
-            after: "sunrise";
-        }
-        program { name: "sunrise";
-            action: STATE_SET "default" 0.0;
-            target: "background_light";
-            transition: ACCELERATE 30;
-            after: "sunset";
-        }
-    }
-
       part { name: "sky_day";
          description { state: "default" 0.0;
             min: 400 278;
@@ -228,6 +195,7 @@ group { name: "game";
             image.normal: "sky0.png";
          }
       }
+
       part { name: "sky_low";
          description { state: "default" 0.0;
             min: 400 278;
@@ -241,6 +209,7 @@ group { name: "game";
             color: 255 255 255 255;
          }
       }
+
       part { name: "sky_night";
          description { state: "default" 0.0;
             min: 400 278;
@@ -280,6 +249,39 @@ group { name: "game";
             target: "sky_low";
             transition: DECELERATE 15;
             after: "sky_low_anim";
+        }
+    }
+
+      part { name: "background";
+         clip_to: "background_light";
+         description { state: "default" 0.0;
+            image.normal: "background.png";
+         }
+      }
+
+      part { name: "background_light";
+         type: RECT;
+         description { state: "default" 0.0;
+            color: 255 220 200 255;
+         }
+         description { state: "night" 0.0;
+            color: 60 60 60 255;
+         }
+      }
+
+    programs {
+        program { name: "sunset";
+            signal: "start";
+            action: STATE_SET "night" 0.0;
+            target: "background_light";
+            transition: ACCELERATE 30;
+            after: "sunrise";
+        }
+        program { name: "sunrise";
+            action: STATE_SET "default" 0.0;
+            target: "background_light";
+            transition: ACCELERATE 30;
+            after: "sunset";
         }
     }
          part { name: "clo";
