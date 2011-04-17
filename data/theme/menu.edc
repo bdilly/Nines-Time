@@ -27,7 +27,7 @@ group { name: "menu";
          description { state: "default" 0.0;
             rel1 {
                to_x: "splashscreen";
-               relative: 0.1 0.93;
+               relative: 0.1 0.94;
             }
             rel2 {
                to_x: "splashscreen";
@@ -80,7 +80,7 @@ group { name: "menu";
             rel1.to: "info_clip";
             rel2 {
                to: "info_clip";
-               relative: 1 0.4;
+               relative: 1 0.32;
             }
             color_class: "info";
             text {
@@ -98,6 +98,26 @@ group { name: "menu";
          description { state: "default" 0.0;
             rel1 {
                to: "info";
+               relative: 0 1;
+               offset: 0 -6;
+            }
+            color_class: "info";
+            text {
+               font: "nines";
+               size: 14;
+               text: "Press I to see instructions.";
+               align: 0.5 0;
+            }
+         }
+      }
+
+      part { name: "info3";
+         type: TEXT;
+         effect: OUTLINE_SOFT_SHADOW;
+         description { state: "default" 0.0;
+            rel1 {
+               to: "info";
+               offset: 0 20;
                relative: 0 1;
             }
             color_class: "info";

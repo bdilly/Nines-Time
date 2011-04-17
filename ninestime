@@ -632,6 +632,54 @@ class MenuScreen(Screen):
             Hooks.fire("sound", GAME_START_SOUND)
             self.hide()
             Hooks.fire("start_game")
+        elif kn == "i":
+            self.hide()
+            Hooks.fire("show_instructions")
+
+class InstructionsScreen(Screen):
+    def __init__(self, ee):
+        Screen.__init__(self, ee, "instructions",
+                on_show_hook_name="show_instructions")
+        self.step = 1
+        self.timer = None
+        # get max steps from theme
+        self.max_step = int(self.screen.data_get("max_steps"))
+
+    def on_show(self):
+        Hooks.fire("music", GAME_MUSIC)
+        self.step = 1
+        self.give_focus()
+        self.screen.signal_emit("reset", "")
+        self.show()
+        self.screen.signal_emit("step_1", "")
+        self.timer = timer_add(5, self.increase_step)
+
+    def increase_step(self):
+        if self.step < 4:
+            self.step += 1
+            self.screen.signal_emit("step_%i" % (self.step), "")
+            return True
+        self.timer = None
+        return False
+
+    def on_key_down(self, obj, event):
+        kn = event.keyname
+        if kn  == "Escape":
+            if self.timer:
+                self.timer.delete
+                self.timer = None
+            self.hide()
+            Hooks.fire("show_menu")
+        elif kn == "Return":
+            if self.step < 4 and self.timer:
+                self.timer.delete()
+                self.timer = None
+            if self.step == self.max_step:
+                self.hide()
+                Hooks.fire("show_menu")
+            else:
+                self.step += 1
+                self.screen.signal_emit("step_%i" % (self.step), "")
 
 def sweet_emotion(ee):
     def play(player, source = ""):
@@ -685,6 +733,7 @@ def game_main():
     menu = MenuScreen(ee)
     game = GameScreen(ee)
     win = WinScreen(ee)
+    instructions = InstructionsScreen(ee)
 
     Hooks.fire("show_menu")
 
