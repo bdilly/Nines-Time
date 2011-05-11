@@ -652,7 +652,7 @@ class InstructionsScreen(Screen):
         self.screen.signal_emit("reset", "")
         self.show()
         self.screen.signal_emit("step_1", "")
-        self.timer = timer_add(5, self.increase_step)
+        self.timer = timer_add(8, self.increase_step)
 
     def increase_step(self):
         if self.step < 4:
