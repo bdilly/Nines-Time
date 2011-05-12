@@ -550,10 +550,17 @@ class GameScreen(Screen):
     def _tick(self):
         self.ee.data["time"] = self.ee.data["time"] - 1
         if (self.ee.data["time"] < 1):
-            self.hide()
+            self._quit()
             Hooks.fire("win")
             return False
         return True
+
+    def _quit(self):
+        self.ee.data.pop("timer").delete()
+        self.ee.data.pop("timer2").delete()
+        self.ee.data["player"].stop_ops()
+        self.numbers_area.clear()
+        self.hide()
 
     def on_show(self):
         self.screen.signal_emit("reset", "")
@@ -573,11 +580,7 @@ class GameScreen(Screen):
     def on_key_down(self, obj, event):
         kn = event.key
         if kn == "Escape":
-            self.ee.data.pop("timer").delete()
-            self.ee.data.pop("timer2").delete()
-            self.ee.data["player"].stop_ops()
-            self.numbers_area.clear()
-            self.hide()
+            self._quit()
             Hooks.fire("show_menu")
         elif kn in ["plus", "KP_Add"]:
             self.ee.data["player"].plus.fire()
