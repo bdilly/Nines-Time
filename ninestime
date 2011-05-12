@@ -483,7 +483,9 @@ class NumbersArea(ClippedSmartObject):
         Hooks.fire("scoreslowdown")
 
     def apply_result_operation(self, op, result):
-        self.check_operation(op)
+        if not self.check_operation(op):
+            self.ee.data["game"].signal_emit("result_wrong", "")
+            return
         n1, pos = self.numbers[0]
         n2, pos = self.numbers[1]
         if n2.number_get() > n1.number_get():
@@ -505,9 +507,10 @@ class NumbersArea(ClippedSmartObject):
 
     def check_operation(self, op):
         if len(self.numbers) < 2:
-            return
+            return False
         if op == '/' and self.numbers[1][0].number_get() == 0:
-            return
+            return False
+        return True
 
     def clear(self):
         for vn in self.numbers:
